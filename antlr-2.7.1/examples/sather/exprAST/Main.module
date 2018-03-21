@@ -1,0 +1,7 @@
+-o main main.sa
+
+../../../lib/sather/Library.module
+
+-has EXPR_LEXER.sa               EXPR_LEXER
+-has EXPR_PARSER_TOKENTYPES.sa   EXPR_PARSER_TOKENTYPES
+-has EXPR_PARSER.sa              EXPR_PARSER

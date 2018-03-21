@@ -1,0 +1,85 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/input_buffer.sa#1 $
+
+*)
+
+partial class ANTLR_INPUT_BUFFER is
+
+   -- clones both antlr.ByteBuffer and antlr.InputBuffer
+
+   private attr input : $ISTREAM;
+   private attr num_to_consume : INT;
+   private attr n_markers : INT;
+   private attr marker_offset : INT;
+
+   private attr queue : CIRCULAR_QUEUE{CHAR};
+
+   init is
+      num_to_consume := 0;
+      n_markers := 0;
+      marker_offset := 0;
+      queue := #CIRCULAR_QUEUE{CHAR}(1);
+   end;
+
+   consume is
+      num_to_consume := num_to_consume + 1;
+   end;
+
+   commit is 
+      n_markers := n_markers - 1;
+   end;
+
+   is_marked : BOOL is
+      return ( n_markers /= 0 );
+   end;
+
+   LA ( i : INT ) : CHAR is
+      fill(i);
+      return queue[ marker_offset + i - 1 ];
+   end;
+
+   mark : INT is 
+      sync_consume;
+      n_markers := n_markers + 1;
+      return marker_offset;
+   end;
+
+   rewind ( mrk : INT ) is
+      sync_consume;
+      marker_offset := mrk;
+      n_markers := n_markers - 1;
+   end;
+
+   private sync_consume is
+
+      loop while!( num_to_consume > 0 );
+
+	 if n_markers > 0 then
+	    marker_offset := marker_offset + 1;
+	 else
+	    queue.remove_first;
+	 end;
+
+	 num_to_consume := num_to_consume - 1;
+
+      end;
+
+   end;
+
+   stub fill ( amount : INT );
+
+--   fill ( amount : INT ) is
+--      sync_consume;
+--
+--      loop while!( queue.num_entries < amount + marker_offset );
+--	 queue.append( input.get );
+--      end;      
+
+--   end;
+
+end;

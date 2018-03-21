@@ -1,0 +1,39 @@
+udword Gudw1;
+
+table<string> gf1(table<string> & ras, table<string> as, sdword sdw, sdword & rsdw)
+{
+  udword udw1, udw2;
+  table<string> stable;
+  string str;
+
+  Gudw1 = udw1;  // 测试"assign"的左Operand是global variable
+  udw1 = udw2;  // 测试"assign"的左Operand是local variable
+  sdw = udw2;  // 测试"assign"的左Operand是value argument，同时自动cast
+  rsdw = udw2;  // 测试"assign"的左Operand是reference argument，同时自动cast
+
+  udw1 = Gudw1;  // 测试"assign"的右Operand是global variable
+  udw1 = udw2;  // 测试"assign"的右Operand是local variable
+  udw1 = rsdw;  // 测试"assign"的右Operand是reference argument，同时自动cast
+  udw1 = udw2 = Gudw1;  // 测试nested "assign"
+
+  stable = ras; // 测试"assign"的右Operand是table，同时测试reference argument
+  stable = as;  // 测试"assign"的右Operand是table
+  stable[1] = stable[2] = str;  // 测试"assign"的左Operand是table-element，同时nested "assign" table-element
+
+  return stable;
+}
+
+
+static void lf1()
+{
+  table<string> as;
+  sdword sdw;
+  table<sdword> asdw;
+  udword udw;
+
+  gf1(as, as, sdw, sdw);
+  gf1(as, as, sdw, asdw[1]);
+
+  sdw = asdw[1] + udw;  // 测试自动cast
+}
+

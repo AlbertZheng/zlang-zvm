@@ -1,0 +1,9 @@
+-o main main.sa
+
+../../../lib/sather/Library.module
+
+-has INSTR_LEXER.sa               INSTR_LEXER
+-has INSTR_PARSER_TOKENTYPES.sa   INSTR_PARSER_TOKENTYPES
+-has INSTR_PARSER.sa              INSTR_PARSER
+-has INSTR_TREE_WALKER.sa         INSTR_TREE_WALKER
+

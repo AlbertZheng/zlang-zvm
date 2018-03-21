@@ -1,0 +1,139 @@
+//
+// 测试新增加的local reference variable功能.
+//
+
+extern bool & gf1(bool & rb, bool b);
+extern byte & gf2(byte & ruch, byte uch);
+extern sdword & gf3(sdword & rsdw, sdword sdw);
+extern udword & gf4(udword & rudw, udword udw);
+extern sqword & gf5(sqword & rsqw, sqword sqw);
+extern uqword & gf6(uqword & ruqw, uqword uqw);
+extern double & gf7(double & rdf, double df);
+extern string & gf8(string & rs, string s);
+extern ipaddress & gf9(ipaddress & rip, ipaddress ip);
+extern pport & gf10(pport & rport, pport port);
+extern table<string> & gf11(table<string> & rt, table<string> t);
+
+extern table<string> gf12(table<string> & rt, table<string> t);
+
+static bool Gb;
+static byte Guch;
+static sdword Gsdw;
+static udword Gudw;
+static sqword Gsqw;
+static uqword Guqw;
+static double Gdf;
+static string Gs;
+static ipaddress Gip;
+static pport Gport;
+static table<string> Gt;
+
+
+//static string & demo()  // 测试compiling error
+//static sdword & demo()  // 测试compiling error
+static string demo()
+{
+  bool b;
+  byte uch;
+  sdword sdw;
+  udword udw;
+  sqword sqw;
+  uqword uqw;
+  double df;
+  string s;
+  ipaddress ip;
+  pport port;
+  table<string> t;
+
+  // 测试reference variable从function calling初始化
+  bool & rb1 = gf1(b, b);
+  byte & ruch1 = gf2(uch,uch);
+  sdword & rsdw1 =gf3(sdw, sdw);
+  udword & rudw1 =gf4(udw,udw);
+  sqword & rsqw1= gf5(sqw, sqw);
+  uqword & ruqw1= gf6(uqw,uqw);
+  double& rdf1=gf7(df,df);
+  string&rs1=gf8(s,s);
+  ipaddress & rip1 = gf9(ip, ip);
+  pport & rport1 = gf10(port, port);
+  table<string> & rt1 = gf11(t, t);
+
+  //table<string> & rt11 = gf12(t, t);  // 测试compiling error
+
+  // 测试reference variable从local variable初始化
+  bool & rb2 = b;
+  byte & ruch2 = uch;
+  sdword & rsdw2 =sdw;
+  udword & rudw2 =udw;
+  sqword & rsqw2= sqw;
+  uqword & ruqw2= uqw;
+  double & rdf2=df;
+  string & rs2=s;
+  ipaddress & rip2 = ip;
+  pport & rport2 = port;
+  table<string> & rt2 = t;
+
+  //string & rs22 = rt1[1];  // 测试compiling error
+
+  // 测试reference variable从local reference variable初始化
+  bool & rb3 = rb1;
+  byte & ruch3 = ruch1;
+  sdword & rsdw3 = rsdw1;
+  udword & rudw3 = rudw1;
+  sqword & rsqw3 = rsqw1;
+  uqword & ruqw3 = ruqw1;
+  double & rdf3 = rdf1;
+  string & rs3 = rs1;
+  ipaddress & rip3 = rip1;
+  pport & rport3 = rport1;
+  table<string> & rt3 = rt1;
+
+  // 测试reference variable从global variable初始化
+  bool & rb4 = Gb;
+  byte & ruch4 = Guch;
+  sdword & rsdw4 = Gsdw;
+  udword & rudw4 = Gudw;
+  sqword & rsqw4= Gsqw;
+  uqword & ruqw4= Guqw;
+  double & rdf4 = Gdf;
+  string & rs4 = Gs;
+  ipaddress & rip4 = Gip;
+  pport & rport4 = Gport;
+  table<string> & rt4 = Gt;
+
+  // 测试local variable从local reference variable初始化
+  bool b1 = rb1;
+  byte uch1 = ruch1;
+  sdword sdw1 = rsdw1;
+  udword udw1 = rudw1;
+  sqword sqw1 = rsqw1;
+  uqword uqw1 = ruqw1;
+  double df1 = rdf1;
+  string s1 = rs1 ;
+  ipaddress ip1 = rip1;
+  pport port1 = rport1;
+  table<string> t1 = rt1;
+
+  // 测试local variable从local reference variable初始化
+  bool b2 = rb1 || b1;
+  byte uch2 = ruch1 + uch1;
+  sdword sdw2 = rsdw1 + sdw1;
+  udword udw2 = rudw1 + udw1;
+  sqword sqw2 = rsqw1 + sqw1;
+  uqword uqw2 = ruqw1 + uqw1;
+  double df2 = rdf1 + df1;
+  string s2 = rs1 + s1;
+
+  //udword & rudw5 = Gsqw;  // 测试compiling error
+  //sqword & rsqw5= Gudw;  // 测试compiling error
+
+  // 测试自动cast
+  udword udw3 = rsdw1 + udw1;
+  sqword sqw3 = ruqw1 + sqw1;
+
+  //return s;  // 测试compiling error
+  //return sdw;  // 测试compiling error
+
+  return rs1;
+}
+

@@ -1,0 +1,32 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/ast_array.sa#1 $
+
+*)
+
+class ANTLR_AST_ARRAY{AST < $ANTLR_AST{AST}} < $ARR{AST} is
+
+   include ARRAY{AST} create->super_create;
+   
+   private attr num_added : INT;
+   
+   -- intended to allow call chaining of the type:
+   --    array.add(x).add(y).add(z)
+   -- Whatever..
+
+   create( capacity : INT ) : SAME is
+      res : SAME := super_create( capacity );
+      res.num_added := 0;
+      return res;
+   end;
+      
+   add( ast : AST ) : SAME is
+      aset( num_added, ast );
+      num_added := num_added + 1;
+      return self;
+   end;
+end;

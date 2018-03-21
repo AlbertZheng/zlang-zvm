@@ -1,0 +1,63 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/common_ast_with_hidden_tokens.sa#1 $
+
+*)
+
+-- A ANTLR_COMMON_AST whose initialization copies hidden token
+-- information from the Token used to create a node.
+
+class ANTLR_COMMON_AST_WITH_HIDDEN_TOKENS < $ANTLR_AST{ANTLR_COMMON_AST_WITH_HIDDEN_TOKENS} is
+
+   include ANTLR_BASE_AST{SAME}; -- create_from_token->super_create_from_token
+   
+   -- references to hidden tokens
+   readonly attr hidden_before, hidden_after : ANTLR_COMMON_HIDDEN_STREAM_TOKEN; 
+
+   const ASTNULL : SAME := 
+	 SAME::create( ANTLR_COMMON_TOKEN::NULL_TREE_LOOKAHEAD, "<ASTNULL>" );
+      
+   attr ttype : INT;
+   attr text : STR;
+
+   create : SAME is
+      res : SAME := new;
+      return res;
+   end;
+   
+   dup : SAME is
+      if ( void(self) ) then
+	 return void;
+      end;
+      return #SAME( ttype, text );
+   end;
+
+   create( typ : INT, txt : STR ) : SAME is
+      res : SAME := new;
+      res.ttype := typ;
+      res.text  := txt;
+      return res;
+   end;
+
+   create_from_ast( t : SAME ) : SAME is
+      res : SAME := create( t.ttype, t.text );
+      return res;
+   end;
+
+   create_from_token( t : $ANTLR_TOKEN ) : SAME is
+      res : SAME := create( t.ttype, t.text );
+      return res;
+   end;
+	 
+   create_from_token( tok : ANTLR_COMMON_HIDDEN_STREAM_TOKEN ) : SAME is
+      res : SAME := #( tok.ttype, tok.text );
+      res.hidden_before := tok.hidden_before;
+      res.hidden_after  := tok.hidden_after;
+      return res;
+   end;
+
+end;

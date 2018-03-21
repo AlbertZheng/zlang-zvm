@@ -1,0 +1,84 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/ast_util.sa#1 $
+
+*)
+
+class ANTLR_AST_UTIL{AST < $ANTLR_AST{AST}} is
+
+   -- Duplicate tree including siblings of root. 
+   dup_list( t : AST ) : AST is
+      res : AST := dup_tree(t);  -- if void(t), then void(result)
+      nt : AST := res;
+      loop while! ( ~void(t) ); -- for each sibling of the root
+	 t := t.next_sibling;
+	 nt.next_sibling( dup_tree(t) ); -- dup each subtree, building new tree
+	 nt := nt.next_sibling;
+      end;
+      return res;
+   end;
+   
+   -- Duplicate a tree, assuming this is a root node of a tree --n
+   -- duplicate that node and what's below; ignore siblings of root node.
+   dup_tree( t : AST ) : AST is
+      res : AST := t.dup;  -- make copy of root
+      -- copy all children of root.
+      if ( ~void(t) ) then
+	 res.first_child( dup_list( t.first_child ) );
+      end;
+      return res;
+   end;
+
+   -- Make a tree from a list of nodes.  The first element in the
+   -- array is the root.  If the root is null, then the tree is
+   -- a simple list not a tree.  Handles null children nodes correctly.
+   -- For example, build(a, b, void, c) yields tree (a b c).  build(void,a,b)
+   --  yields tree (nil a b).
+
+   make( nodes : $ARR{AST} ) : AST is
+      if ( void(nodes) or nodes.size = 0 ) then
+	 return void;
+      end;
+
+      root : AST := nodes[0];
+      tail : AST;
+
+      if ( ~void(root) ) then
+	 root.first_child(void); -- don't leave any old pointers set
+      end;
+
+      -- link in children;
+      ni : AST;
+      i : INT;
+      loop i := 1.upto!( nodes.size - 1);
+
+	 ni := nodes[i];
+	 -- ni := nodes.elt!; -- can't use elt! since it starts from index 0
+
+	 if ( ~void(ni) ) then -- ignore null nodes
+	    if ( void(root) ) then
+	       -- Set the root and set it up for a flat list
+	       tail := ni;
+	       root := tail;
+	    elsif ( void(tail) ) then
+	       root.first_child(ni);
+	       tail := root.first_child;
+	    else 
+	       tail.next_sibling(ni);
+	       tail := tail.next_sibling;
+	    end;
+
+	    -- Chase tail to last sibling
+	    loop while! ( ~void(tail.next_sibling) ); 
+	       tail := tail.next_sibling;
+	    end;
+	 end;
+      end;
+      return root;
+   end;
+
+end;

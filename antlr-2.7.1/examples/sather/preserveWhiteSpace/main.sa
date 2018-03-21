@@ -1,0 +1,47 @@
+class MAIN is
+
+   shared filter : ANTLR_TOKEN_STREAM_HIDDEN_TOKEN_FILTER;
+
+   main ( args : ARRAY{STR} ) is
+
+      if ( args.size < 2 ) then
+	 #OUT + "usage " + args[0] + " <filename>\n";
+	 return;
+      end;
+	 
+      f : IFSTREAM := IFSTREAM::open_for_read( args[1] );
+
+      if ( void(f) ) then
+	 #OUT + "file \"" + args[1] + "\" not found\n";
+	 return;
+      end;
+
+      lexer ::= #INSTR_LEXER{ANTLR_COMMON_HIDDEN_STREAM_TOKEN}( f );
+      filter ::= #ANTLR_TOKEN_STREAM_HIDDEN_TOKEN_FILTER( lexer );
+      if ( void( filter ) ) then
+	 #OUT + "created void\n";
+      end;
+	       
+      parser ::= #INSTR_PARSER{ANTLR_COMMON_HIDDEN_STREAM_TOKEN,
+			       ANTLR_COMMON_AST_WITH_HIDDEN_TOKENS}( filter );
+
+      filter.hide( parser.WS );
+      filter.hide( parser.SL_COMMENT );
+      
+      protect
+	 parser.slist;
+      when $STR then
+	 #ERR + "error: " + exception.str;
+      end;
+
+      t : ANTLR_COMMON_AST_WITH_HIDDEN_TOKENS := parser.ast;
+      walker ::= #INSTR_TREE_WALKER{ANTLR_COMMON_AST_WITH_HIDDEN_TOKENS}( filter );
+      
+      protect
+	 walker.slist(t);
+      when $STR then
+	 #ERR + "error: " + exception.str;
+      end;
+   end;
+end;
+

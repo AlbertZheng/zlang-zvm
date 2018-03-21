@@ -1,0 +1,121 @@
+/* zls/zfc/config.h.in.  Generated automatically from configure.in by autoheader 2.13.  */
+/*
+ * Put any default '#undef' or '#define' here, they will be copied to top of 'config.h.in'.
+ */
+
+/* Define to empty if the keyword does not work.  */
+#undef const
+
+/* Define if you don't have vprintf but do have _doprnt.  */
+#undef HAVE_DOPRNT
+
+/* Define if you have the strftime function.  */
+#undef HAVE_STRFTIME
+
+/* Define if you have the vprintf function.  */
+#undef HAVE_VPRINTF
+
+/* Define as __inline if that's what the C compiler calls it.  */
+#undef inline
+
+/* Define to `unsigned' if <sys/types.h> doesn't define.  */
+#undef size_t
+
+/* Define if you have the ANSI C header files.  */
+#undef STDC_HEADERS
+
+/* Define if you can safely include both <sys/time.h> and <time.h>.  */
+#undef TIME_WITH_SYS_TIME
+
+/* Define if your <sys/time.h> declares struct tm.  */
+#undef TM_IN_SYS_TIME
+
+/*
+ * Here are requied macros by 'AC_DEFINE()' in 'configure.in'.
+ */
+#undef __linux__
+#undef __solaris__
+
+#undef ENABLE_DEBUG_ZLS_malloc
+#undef ENABLE_THREADS
+#undef HAVE_PTHREAD_H
+#undef HAVE_CXX_EH
+#undef HAVE_CXX_NS
+#undef HAVE_CXX_STL
+#undef ENABLE_OVERLOAD_OPERATOR_NEW
+#undef NDEBUG
+
+#undef HAVE_ASM_ATOMIC_H
+#undef HAVE_SYS_ATOMIC_H
+#undef HAVE_ATOMIC
+#undef HAVE_PTHREAD_MUTEX_RECURSIVE
+#undef HAVE_STRUCT_ICMPHDR
+#undef HAVE_TCP_STATES
+#undef HAVE_STRUCT_UDPHDR
+
+#undef ENABLE_ZVM_DEBUG
+#undef ENABLE_ZVM_OPTIMIZATION
+
+/* The number of bytes in a int.  */
+#undef SIZEOF_INT
+
+/* The number of bytes in a long.  */
+#undef SIZEOF_LONG
+
+/* The number of bytes in a long long.  */
+#undef SIZEOF_LONG_LONG
+
+/* Define if you have the localtime_r function.  */
+#undef HAVE_LOCALTIME_R
+
+/* Define if you have the nanosleep function.  */
+#undef HAVE_NANOSLEEP
+
+/* Define if you have the pthread_attr_setstacksize function.  */
+#undef HAVE_PTHREAD_ATTR_SETSTACKSIZE
+
+/* Define if you have the pthread_create function.  */
+#undef HAVE_PTHREAD_CREATE
+
+/* Define if you have the pthread_delay_np function.  */
+#undef HAVE_PTHREAD_DELAY_NP
+
+/* Define if you have the pthread_yield function.  */
+#undef HAVE_PTHREAD_YIELD
+
+/* Define if you have the sched_yield function.  */
+#undef HAVE_SCHED_YIELD
+
+/* Define if you have the <dlfcn.h> header file.  */
+#undef HAVE_DLFCN_H
+
+/* Define if you have the <limits.h> header file.  */
+#undef HAVE_LIMITS_H
+
+/* Define if you have the <pthread_np.h> header file.  */
+#undef HAVE_PTHREAD_NP_H
+
+/* Define if you have the <sched.h> header file.  */
+#undef HAVE_SCHED_H
+
+/* Define if you have the <strings.h> header file.  */
+#undef HAVE_STRINGS_H
+
+/* Define if you have the <sys/sched.h> header file.  */
+#undef HAVE_SYS_SCHED_H
+
+/* Define if you have the <syslog.h> header file.  */
+#undef HAVE_SYSLOG_H
+
+/* Define if you have the <unistd.h> header file.  */
+#undef HAVE_UNISTD_H
+
+/* Name of package */
+#undef PACKAGE
+
+/* Version number of package */
+#undef VERSION
+
+/*
+ * Put any default '#undef' or '#define' here, they will be copied to bottom of 'config.h.in'.
+ */

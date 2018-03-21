@@ -1,0 +1,7 @@
+-o main main.sa
+
+../../../lib/sather/Library.module
+
+-has DATA_LEXER.sa               DATA_LEXER
+-has DATA_PARSER_TOKENTYPES.sa   DATA_PARSER_TOKENTYPES
+-has DATA_PARSER.sa              DATA_PARSER                 

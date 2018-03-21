@@ -1,0 +1,11 @@
+-o main main.sa
+
+../../../lib/sather/Library.module
+
+-has SATHER_LEXER.sa               SATHER_LEXER
+-has SATHER_TOKENTYPES.sa          SATHER_TOKENTYPES
+-has SATHER_PARSER.sa              SATHER_PARSER                 
+
+(* 
+-has SATHER_TREE_WALKER.sa         SATHER_TREE_WALKER 
+*)

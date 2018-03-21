@@ -1,0 +1,19 @@
+class CHAR_SET is
+
+   include ARRAY{BOOL};
+
+   create ( ba : ARRAY{BOOL} ) : SAME 
+      pre ~void(ba) is
+      res ::= new( ba.size );
+      -- copy: expensive
+      loop 
+	 res.set!( ba.elt! );
+      end;
+      return res;
+   end;
+
+   member( c : CHAR ) : BOOL is
+      return aget( c.int );
+   end;
+
+end;

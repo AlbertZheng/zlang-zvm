@@ -1,0 +1,118 @@
+abstract class $CALC_AST < $ANTLR_AST{$CALC_AST} is
+
+   val : INT;
+   
+end;
+
+class HETERO_AST{AST < $ANTLR_AST{AST}} < $ANTLR_AST{AST} is
+
+   include ANTLR_BASE_AST{AST};
+	 
+   -- The AST Null object; the parsing cursor is set to this when
+   -- it is found to be null.  This way, we can test the
+   -- token type of a node without having to have tests for null
+   -- everywhere.
+
+   const ASTNULL : SAME := 
+	 SAME::create( ANTLR_COMMON_TOKEN::NULL_TREE_LOOKAHEAD, "<ASTNULL>" );
+      
+   attr ttype : INT;
+   attr text : STR;
+
+   create : SAME is
+      res : SAME := new;
+      return res;
+   end;
+   
+   dup : SAME is
+      if ( void(self) ) then
+	 return void;
+      end;
+      return #SAME( ttype, text );
+   end;
+
+   create( typ : INT, txt : STR ) : SAME is
+      res : SAME := new;
+      res.ttype := typ;
+      res.text  := txt;
+      return res;
+   end;
+
+   create_from_ast( t : AST ) : SAME is
+      res : SAME := create( t.ttype, t.text );
+      return res;
+   end;
+
+   create_from_token( t : $ANTLR_TOKEN ) : SAME is
+      res : SAME := create( t.ttype, t.text );
+      return res;
+   end;
+
+end;
+
+-- A simple node to represent an INT 
+class INT_NODE < $CALC_AST is
+   
+   include HETERO_AST{$CALC_AST};
+   attr val : INT;
+
+   create_from_token( t : $ANTLR_TOKEN ) : SAME is
+      res ::= new;
+      res.val := INT::create( t.text );
+      return res;
+   end;
+   
+   str : STR is
+      return " " + val;
+   end;
+   
+end;
+
+partial class BINARY_OPERATOR_AST < $CALC_AST is
+
+   include HETERO_AST{$CALC_AST};
+   
+   Left : $CALC_AST is
+      return first_child;
+   end;
+
+   Right : $CALC_AST is
+      t : $CALC_AST := Left;
+      if ( void(t) ) then 
+	 return void;
+      else
+	 return t.next_sibling;
+      end;
+   end;
+
+   stub val : INT;
+   
+end;
+
+-- A simple node to represent MULT operation 
+class MULT_NODE < $CALC_AST is
+
+   include BINARY_OPERATOR_AST;
+   
+   -- Compute value of subtree; this is heterogeneous part :)
+   val : INT is 
+      return Left.val * Right.val;
+   end;
+
+   const str : STR := " *";
+
+end;
+
+-- A simple node to represent PLUS operation 
+class PLUS_NODE < $CALC_AST is
+
+   include BINARY_OPERATOR_AST;
+   
+   -- Compute value of subtree; this is heterogeneous part :)
+   val : INT is 
+      return Left.val + Right.val;
+   end;
+
+   const str : STR := " +";
+
+end;

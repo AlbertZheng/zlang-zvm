@@ -1,0 +1,19 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/char_stream_exception.sa#1 $
+
+*)
+
+-- Anything that goes wrong while generating a stream of characters
+abstract class $ANTLR_CHAR_STREAM_EXCEPTION < $ANTLR_EXCEPTION is
+   str : STR;
+   message : STR;
+end;
+
+class ANTLR_CHAR_STREAM_EXCEPTION < $ANTLR_CHAR_STREAM_EXCEPTION is
+   include ANTLR_EXCEPTION;
+end;

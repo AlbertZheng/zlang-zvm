@@ -1,0 +1,61 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/no_viable_alt_exception.sa#1 $
+
+*)
+
+class ANTLR_NO_VIABLE_ALT_EXCEPTION{AST < $ANTLR_AST{AST} } < $ANTLR_RECOGNITION_EXCEPTION is
+
+   include ANTLR_RECOGNITION_EXCEPTION 
+	 str     -> super_str, 
+	 message -> super_message;
+
+   attr token : $ANTLR_TOKEN;
+   attr node : AST;	-- handles parsing and treeparsing
+   readonly attr line : INT;
+   readonly attr column : INT;   
+
+   create( t : AST ) : SAME is
+      res : SAME := #SAME("NoViableAlt");
+      res.node := t;
+      res.file_name := "<AST>";
+      return res;
+   end;
+
+   create_from_token( t : $ANTLR_TOKEN , fn : STR ) : SAME is
+      res : SAME := #SAME("NoViableAlt");
+      res.token := t;
+      res.line := t.line;
+      res.column := t.column;
+      res.file_name := fn;
+      return res;
+   end;
+
+   -- Returns a clean error message (no line number/column information)
+   message : STR is
+      if ( ~void(token) ) then
+	 return "unexpected token: " + token.text;
+      end;
+
+      -- must be a tree parser error if void(token)
+      if ( SYS::is_eq( node , AST::ASTNULL ) ) then
+	 return "unexpected end of subtree";
+      end;
+
+      return "unexpected AST node: " + node.str;
+   end;
+
+   -- Returns a string representation of this exception.
+   str : STR is
+      if ( ~void(token) ) then
+	 return file_line_str + message;
+      end;
+      
+      return message;
+   end;
+
+end;

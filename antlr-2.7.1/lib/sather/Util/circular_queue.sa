@@ -1,0 +1,65 @@
+class CIRCULAR_QUEUE{T} is
+
+   private attr buffer: AREF{T};
+
+   private  attr offset        : INT;
+   readonly attr num_entries   : INT;
+
+   create( min_size : INT ) : SAME is
+
+      size_min : INT := size_min.max(2); -- make min_size at least 2
+
+      -- find first power of 2 >= to requested size
+      size : INT := 2;
+      loop while!( size < min_size );
+	 size := size * 2;
+      end;
+
+      res : SAME := new;
+
+      res.buffer := #AREF{T}( size );
+      res.offset := 0;
+      res.num_entries := 0;
+
+      return res;
+
+   end;
+  
+   append( t : T ) is
+
+      if num_entries = buffer.asize 
+      then
+	 expand;
+      end;
+
+      buffer[ ( offset + num_entries ).mod( buffer.asize ) ] := t;
+      num_entries := num_entries + 1;
+
+   end;
+
+   aget( index : INT ) : T is
+      assert( index < buffer.asize );
+      return buffer[ ( offset + index ).mod( buffer.asize ) ];
+   end;
+
+   expand is
+      -- copy
+      new_buffer : AREF{T} := #AREF{T}( buffer.asize * 2 );
+
+      i : INT := 0;
+      loop while!( i < buffer.asize );
+	 new_buffer[i] := aget( i );
+	 i := i + 1;
+      end;
+
+      -- reinitialize
+      buffer := new_buffer;
+      offset := 0;
+   end;
+
+   remove_first is 
+      offset := ( offset + 1 ).mod( buffer.asize );
+      num_entries := num_entries - 1;
+   end;
+
+end;

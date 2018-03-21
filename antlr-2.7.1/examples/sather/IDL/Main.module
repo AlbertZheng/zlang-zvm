@@ -1,0 +1,7 @@
+-o main main.sa
+
+../../../lib/sather/Library.module
+
+-has IDL_LEXER.sa       IDL_LEXER
+-has IDL_TOKENTYPES.sa  IDL_TOKENTYPES
+-has IDL_PARSER.sa      IDL_PARSER

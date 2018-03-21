@@ -1,0 +1,6 @@
+-o main test.sa
+
+../../../lib/sather/Library.module
+
+-has T.sa              T
+-has T_TOKENTYPES.sa   T_TOKENTYPES

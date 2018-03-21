@@ -1,0 +1,53 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/common_token.sa#1 $
+
+*)
+
+class ANTLR_COMMON_TOKEN < $ANTLR_TOKEN is
+
+   -- constants
+   const MIN_USER_TYPE       : INT :=  4;
+   const NULL_TREE_LOOKAHEAD : INT :=  3;
+   const INVALID_TYPE        : INT :=  0;
+   const EOF_TYPE            : INT :=  1;
+   const SKIP                : INT := -1;
+
+   attr column : INT;
+   attr line   : INT;
+   attr ttype  : INT;
+   attr text   : STR;
+
+   create : SAME is
+      res : SAME := new;
+      res.ttype := INVALID_TYPE;
+      return res;
+   end;
+
+   create( t: INT ) : SAME is
+      res : SAME := new;
+      res.ttype := t;
+      return res;
+   end;
+
+   create( t: INT , txt : STR ) : SAME is
+      res : SAME := new;
+      res.ttype := t;
+      res.text := txt;
+      return res;
+   end;
+
+
+   str: STR is
+      return "[\"" + text + "\",<" + ttype + ">,line=" + line + "]";
+   end;
+
+   invalid : BOOL is
+      return ( ttype = INVALID_TYPE );
+   end;
+
+end;

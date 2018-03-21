@@ -1,0 +1,158 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/token_stream_hidden_token_filter.sa#1 $
+
+*)
+
+class ANTLR_TOKEN_STREAM_HIDDEN_TOKEN_FILTER < $ANTLR_TOKEN_STREAM{ANTLR_COMMON_HIDDEN_STREAM_TOKEN} is
+   
+   include ANTLR_TOKEN_STREAM_BASIC_FILTER{ANTLR_COMMON_HIDDEN_STREAM_TOKEN}
+	 create -> super_create;
+   
+   attr hide_set : INT_SET;
+   private attr next_monitored_token : ANTLR_COMMON_HIDDEN_STREAM_TOKEN;
+	
+   -- track tail of hidden list emanating from previous
+   --  monitored token
+   private attr last_hidden_token : ANTLR_COMMON_HIDDEN_STREAM_TOKEN;
+   readonly attr first_hidden_token : ANTLR_COMMON_HIDDEN_STREAM_TOKEN;
+
+   create ( input : $ANTLR_TOKEN_STREAM{ANTLR_COMMON_HIDDEN_STREAM_TOKEN} ) : SAME is
+      res : SAME := super_create( input );
+      res.hide_set := #INT_SET;
+      return res;
+   end;
+   
+   consume is
+      next_monitored_token := input.next_token;
+   end;
+   
+   consume_first is
+      consume;
+      
+      -- Handle situation where hidden or discarded tokens
+      -- appear first in input stream
+      p : ANTLR_COMMON_HIDDEN_STREAM_TOKEN;
+      
+      -- while hidden or discarded scarf tokens
+      loop while!( hide_set.member( LA(1).ttype ) or discard_set.member( LA(1).ttype ) );
+	 if ( hide_set.member( LA(1).ttype ) ) then
+	    if ( void(p) ) then
+	       p := LA(1);
+	    else
+	       p.hidden_after := LA(1);
+	       LA(1).hidden_before(p); -- double-link
+	       p := LA(1);
+	    end;
+	    last_hidden_token := p;
+	    if ( void(first_hidden_token) ) then
+	       first_hidden_token := p; -- record hidden token if first
+	    end;
+	 end;
+	 consume;
+      end;
+   end;
+
+   hidden_after( t : ANTLR_COMMON_HIDDEN_STREAM_TOKEN ) : ANTLR_COMMON_HIDDEN_STREAM_TOKEN is
+      return t.hidden_after;
+   end;
+   
+   hidden_before( t : ANTLR_COMMON_HIDDEN_STREAM_TOKEN ) : ANTLR_COMMON_HIDDEN_STREAM_TOKEN is
+      return t.hidden_before;
+   end;
+
+   hide ( m : INT ) is
+      hide_set := hide_set.insert( m );
+   end;
+   
+   LA( i : INT ) : ANTLR_COMMON_HIDDEN_STREAM_TOKEN is
+      return next_monitored_token;
+   end;
+   
+   -- Return the next monitored token.
+   -- Test the token following the monitored token.
+   -- If following is another monitored token, save it
+   -- for the next invocation of nextToken (like a single
+   -- lookahead token) and return it then.
+   -- If following is unmonitored, nondiscarded (hidden)
+   -- channel token, add it to the monitored token.
+ 
+   -- Note: EOF must be a monitored Token.
+ 
+   next_token : ANTLR_COMMON_HIDDEN_STREAM_TOKEN is
+
+      -- handle an initial condition; don't want to get lookahead
+      -- token of this splitter until first call to nextToken
+      if ( void(LA(1)) ) then
+	 consume_first;
+      end;
+      
+      -- we always consume hidden tokens after monitored, thus,
+      -- upon entry LA(1) is a monitored token
+      monitored : ANTLR_COMMON_HIDDEN_STREAM_TOKEN := LA(1);
+
+      -- point to hidden tokens found during last invocation
+      monitored.hidden_before( last_hidden_token);
+      last_hidden_token := void;
+	
+      -- Look for hidden tokens, hook them into list emanating
+      -- from the monitored tokens.
+      consume;
+      
+      p : ANTLR_COMMON_HIDDEN_STREAM_TOKEN := monitored;
+      
+      loop while! ( hide_set.member( LA(1).ttype ) or discard_set.member( LA(1).ttype ) );
+	 if ( hide_set.member( LA(1).ttype ) ) then
+	    -- attach the hidden token to the monitored in a chain
+	    -- link forwards
+	    p.hidden_after := LA(1);
+	    -- link backwards
+	    if ( ~SYS::is_eq( p , monitored ) ) then
+	       -- hidden cannot point to monitored tokens
+	       LA(1).hidden_before(p);
+	    end;
+	    last_hidden_token := LA(1);
+	    p := last_hidden_token;
+	 end;
+	 consume;
+      end;
+
+      if ( false ) then
+	 s : STR := "result=";
+	 if ( void(monitored) ) then
+	    s := s + "(null)";
+	else
+	    s := s + monitored.str;
+      end;
+      
+      s := s + "\nlast=";
+      if ( void(last_hidden_token) ) then
+	 s := s + "(null)";
+      else
+	 s := s + last_hidden_token.str;
+      end;
+
+      s := s + "\nfirst=";
+      if ( void(first_hidden_token) ) then
+	 s := s +"(null)";
+      else
+	 s := s + first_hidden_token.str;
+      end;
+
+      s := s + "\nnext=";
+      if ( void(next_monitored_token) ) then
+	 s := s + "(null)";
+      else
+	 s := s + next_monitored_token.str;
+      end;
+
+      #OUT + s + "\n\n";
+   end;
+      return monitored;
+   end;
+
+end;

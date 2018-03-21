@@ -1,0 +1,285 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/mismatched_token_exception.sa#1 $
+
+*)
+
+class ANTLR_MISMATCHED_TOKEN_EXCEPTION{AST} < $ANTLR_RECOGNITION_EXCEPTION is
+
+   include ANTLR_RECOGNITION_EXCEPTION 
+	 str -> super_str,
+	 message -> super_message;
+   
+   -- Types of tokens
+   const TOKEN     : INT := 1;
+   const NOT_TOKEN : INT := 2;
+   const RANGE     : INT := 3;
+   const NOT_RANGE : INT := 4;
+   const SET       : INT := 5;
+   const NOT_SET   : INT := 6;
+
+   -- One of the above
+   attr mismatch_type : INT;
+
+   -- For TOKEN/NOT_TOKEN and RANGE/NOT_RANGE
+   attr expecting : INT;
+
+   -- For RANGE/NOT_RANGE (expecting is lower bound of range)
+   attr upper : INT;
+
+   -- For SET/NOT_SET
+   attr set : INT_SET;
+
+   -- Token names array for formatting 
+   attr token_names : ARRAY{STR};
+
+   -- The token that was encountered
+   attr token : $ANTLR_TOKEN;
+
+   -- The offending AST node if tree walking
+   attr node : $ANTLR_AST{AST};
+
+   -- taken from node or token object
+   attr token_text : STR; 
+
+   -- Looking for AST wildcard, didn't find it 
+   create : SAME is
+      res : SAME := #SAME("Mismatched Token: expecting any AST node");
+      return res;
+   end;
+
+   -- Expected range / not range
+   create( token_names : ARRAY{STR}, node : $ANTLR_AST{AST}, lower : INT, upper : INT , match_not : BOOL ) : SAME is
+
+      res : SAME := #SAME("Mismatched Token");
+      res.token_names := token_names;
+      res.node := node;
+
+      if ( void(node) ) then
+	 res.token_text := "<empty tree>";
+      else 
+	 res.token_text := node.str;
+      end;
+      
+      res.expecting := lower;
+      res.upper := upper;
+      res.file_name := "<AST>";
+      
+      if ( match_not ) then
+	 res.mismatch_type := NOT_RANGE;
+      else 
+	 res.mismatch_type := RANGE;
+      end;
+
+      return res;
+      
+   end;
+
+   -- Expected token / not token
+   create( token_names : ARRAY{STR}, node : $ANTLR_AST{AST}, expecting : INT, match_not : BOOL ) : SAME is
+
+      res : SAME := #SAME("Mismatched Token");
+      res.token_names := token_names;
+      res.node := node;
+
+      if ( void(node) ) then
+	 res.token_text := "<empty tree>";
+      else 
+	 res.token_text := node.str;
+      end;
+      
+      res.expecting := expecting;
+      res.file_name := "<AST>";
+      
+      if ( match_not ) then
+	 res.mismatch_type := NOT_RANGE;
+      else 
+	 res.mismatch_type := RANGE;
+      end;
+
+      return res;
+
+   end;
+   
+   -- Expected INT_SET / not INT_SET
+   create( token_names : ARRAY{STR}, node : $ANTLR_AST{AST}, set : INT_SET, match_not : BOOL ) : SAME is 
+
+      res : SAME := #SAME("Mismatched Token");
+      res.token_names := token_names;
+      res.node := node;
+      res.token_names := token_names;
+
+      if ( void(node) ) then
+	 res.token_text := "<empty tree>";
+      else 
+	 res.token_text := node.str;
+      end;
+      
+      res.set := set;
+      res.file_name := "<AST>"; 
+      
+      if ( match_not ) then
+	 res.mismatch_type := NOT_SET;
+      else 
+	 res.mismatch_type := SET;
+      end;
+
+      return res;
+
+   end;
+
+   -- Expected range / not range
+   create_from_token(
+		     token_names : ARRAY{STR}, 
+		     token       : $ANTLR_TOKEN, 
+		     lower       : INT, 
+		     upper       : INT, 
+		     match_not   : BOOL,
+		     file        : STR           ) : SAME is
+		     
+      
+      res : SAME := #SAME("Mismatched Token");
+      res.token_names := token_names;
+      res.token := token;
+      res.line := token.line;
+      res.column := token.column;
+      res.token_text := token.text;
+      res.expecting := lower;
+      res.upper := upper;
+      res.file_name := file;
+	    
+      if ( match_not ) then
+	 res.mismatch_type := NOT_RANGE;
+      else 
+	 res.mismatch_type := RANGE;
+      end;
+
+      return res;
+   end;
+
+   -- Expected token / not token
+   create_from_token ( 
+		      token_names : ARRAY{STR}, 
+		      token       : $ANTLR_TOKEN, 
+		      expecting   : INT, 
+		      match_not   : BOOL,
+		      file        : STR           ) : SAME is
+
+      res : SAME := #SAME("Mismatched Token");
+      res.token_names := token_names;
+      res.token := token;
+      res.line := token.line;
+      res.column := token.column;
+      res.token_text := token.text;
+      res.expecting := expecting;
+      res.file_name := file;
+      
+      if ( match_not ) then
+	 res.mismatch_type := NOT_TOKEN;
+      else 
+	 res.mismatch_type := TOKEN;
+      end;
+
+      return res;
+      
+   end;
+
+   -- Expected INT_SET / not INT_SET
+   create_from_token ( 
+		      token_names : ARRAY{STR}, 
+		      token       : $ANTLR_TOKEN, 
+		      set         : INT_SET, 
+		      match_not   : BOOL,
+		      file        : STR           ) : SAME is
+
+      res : SAME := #SAME("Mismatched Token");
+      res.token_names := token_names;
+      res.token := token;
+      res.line := token.line;
+      res.column := token.column;
+      res.token_text := token.text;
+      res.set := set;
+      res.file_name := file;
+      
+      if ( match_not ) then
+	 res.mismatch_type := NOT_SET;
+      else 
+	 res.mismatch_type := SET;
+      end;
+
+      return res;
+
+   end;
+
+   -- Returns the error message that happened on the line/col given.
+   -- Copied from str.
+   message : STR is 
+
+      sb : STR;
+
+      case ( mismatch_type ) 
+      when TOKEN then
+	 sb := "expecting " + token_name(expecting) + ", found '" + token_text + "'";
+      when NOT_TOKEN then
+	 sb := "expecting anything but " + token_name(expecting) + "; got it anyway";
+      when RANGE then
+	 sb := "expecting token in range: " + token_name(expecting) + ".." + token_name(upper) 
+	    + ", found '" + token_text + "'";
+      when NOT_RANGE then
+	 sb := "expecting token NOT in range: " + token_name(expecting) + ".." + token_name(upper) 
+	       + ", found '" + token_text + "'";
+      when SET , NOT_SET then
+	 sb := "expecting "; 
+	 if ( mismatch_type = NOT_SET ) then
+	    sb := sb + "NOT "; 
+	 end;
+	 sb := sb + "one of (";
+
+	 loop
+	    sb := sb + " " + token_name( set.elt! );
+	 end;
+
+	 sb := sb + "), found '" + token_text + "'";
+
+      else
+	 sb := sb + super_str;
+      end;
+      return sb.str;
+   end;
+
+   (*
+   -- return the column number that this exception happened on.
+   column : INT is
+      return token.column;
+   end;
+	 
+   -- return the line number that this exception happened on.
+   line : INT is 
+      return token.line; 
+   end;
+   *)
+   
+   private token_name( token_type : INT ) : STR is
+      if ( token_type = ANTLR_COMMON_TOKEN::INVALID_TYPE ) then
+	 return "<Set of tokens>";
+      elsif ( token_type < 0 or token_type >= token_names.size ) then
+	 return "<" + token_type + ">";
+      else 
+	 return token_names[token_type];
+      end;
+   end;
+
+   -- return a string representation of this exception.
+   str : STR is
+      if ( ~void(token) ) then -- AST or Token?
+	 return file_line_str + message;
+      else
+	 return message;
+      end;
+   end;
+
+end;

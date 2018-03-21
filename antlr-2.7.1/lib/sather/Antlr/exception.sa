@@ -1,0 +1,29 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/exception.sa#1 $
+
+*)
+
+abstract class $ANTLR_EXCEPTION < $STR is
+   str : STR;
+end;
+
+class ANTLR_EXCEPTION < $ANTLR_EXCEPTION is
+   attr str : STR;
+
+   message : STR is
+      return str;
+   end;
+
+   create ( s : STR ) : SAME is
+      res ::= new;
+      res.str := s;
+      return res;
+   end;
+   
+end;
+

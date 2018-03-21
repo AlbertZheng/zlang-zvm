@@ -1,0 +1,57 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/common_ast.sa#1 $
+
+*)
+
+-- ANTLR_COMMON_AST is a homogeneous AST.  its right/down are of identical type
+
+class ANTLR_COMMON_AST < $ANTLR_AST{ANTLR_COMMON_AST} , $STR is
+
+   include ANTLR_BASE_AST{ANTLR_COMMON_AST};
+
+   -- The AST Null object; the parsing cursor is set to this when
+   -- it is found to be null.  This way, we can test the
+   -- token type of a node without having to have tests for null
+   -- everywhere.
+
+   const ASTNULL : SAME := 
+	 SAME::create( ANTLR_COMMON_TOKEN::NULL_TREE_LOOKAHEAD, "<ASTNULL>" );
+      
+   attr ttype : INT;
+   attr text : STR;
+
+   create : SAME is
+      res : SAME := new;
+      return res;
+   end;
+   
+   dup : SAME is
+      if ( void(self) ) then
+	 return void;
+      end;
+      return #SAME( ttype, text );
+   end;
+
+   create( typ : INT, txt : STR ) : SAME is
+      res : SAME := new;
+      res.ttype := typ;
+      res.text  := txt;
+      return res;
+   end;
+
+   create_from_ast( t : SAME ) : SAME is
+      res : SAME := create( t.ttype, t.text );
+      return res;
+   end;
+
+   create_from_token( t : $ANTLR_TOKEN ) : SAME is
+      res : SAME := create( t.ttype, t.text );
+      return res;
+   end;
+
+end;

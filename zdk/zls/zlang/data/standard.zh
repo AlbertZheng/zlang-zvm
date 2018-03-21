@@ -1,0 +1,32 @@
+#ifndef __ZLang_Standard_Library_zh__
+#define __ZLang_Standard_Library_zh__
+
+extern void PrintBool(bool b);
+extern void PrintByte(byte uch);
+extern void PrintSDWORD(sdword sdw);
+extern void PrintUDWORD(udword udw);
+extern void PrintSQWORD(sqword sqw);
+
+extern void PrintUQWORD(uqword uqw);
+
+extern void PrintDouble(double df);
+extern void PrintString(string s);
+extern void PrintPPort(pport port);
+extern void PrintIPAddress(ipaddress ip);
+
+extern void PrintlnBool(bool b);
+extern void PrintlnByte(byte uch);
+extern void PrintlnSDWORD(sdword sdw);
+extern void PrintlnUDWORD(udword udw);
+extern void PrintlnSQWORD(sqword sqw);
+
+extern void PrintlnUQWORD(uqword uqw);
+
+extern void PrintlnDouble(double df);
+extern void PrintlnString(string s);
+extern void PrintlnPPort(pport port);
+extern void PrintlnIPAddress(ipaddress ip);
+
+extern uqword Time();
+
+#endif

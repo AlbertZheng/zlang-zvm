@@ -1,0 +1,6 @@
+-o main main.sa
+
+../../../lib/sather/Library.module
+
+-has REWRITE.sa              REWRITE
+-has REWRITE_TOKENTYPES.sa   REWRITE_TOKENTYPES

@@ -1,0 +1,19 @@
+class IFSTREAM < $ISTREAM is
+
+   include FILE open_for_read -> FILE_open_for_read;
+
+   get : CHAR is
+      return get_char;
+   end;
+
+   const eof_char : CHAR := '\377';
+
+   open_for_read ( file_name : STR ) : SAME is
+      file : SAME := FILE_open_for_read( file_name );
+      if ( void(file.fp) ) then
+	 return void
+      end;
+      return file;
+   end;
+
+end;

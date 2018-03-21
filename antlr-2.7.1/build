@@ -1,0 +1,15 @@
+#!/bin/sh
+#SRC=/home/parrt/depot/code/org.antlr/main/main/antlr
+SRC=`pwd`/antlr
+COMPILER="jikes"
+
+echo Compiling ANTLR
+cd $SRC; $COMPILER *.java
+cd $SRC/actions/cpp; $COMPILER *.java
+cd $SRC/actions/java; $COMPILER *.java
+cd $SRC/actions/sather; $COMPILER *.java
+cd $SRC/collections; $COMPILER *.java
+cd $SRC/collections/impl; $COMPILER *.java
+cd $SRC/debug; $COMPILER *.java
+cd $SRC/debug/misc; $COMPILER *.java
+cd $SRC/preprocessor; $COMPILER *.java

@@ -1,0 +1,5 @@
+-o main AST_TEST.sa  
+
+../../../lib/sather/Library.module
+
+-has AST_TEST_TOKENTYPES.sa AST_TEST_TOKENTYPES

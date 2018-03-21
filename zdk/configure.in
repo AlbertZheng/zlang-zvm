@@ -1,0 +1,268 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(zls/zfc/Manifest.h)
+AC_CANONICAL_SYSTEM()
+AM_CONFIG_HEADER(zls/zfc/config.h)
+AM_INIT_AUTOMAKE(libzdk, 1.0.0)
+
+# version is current:revision:age
+# versioning works like this:
+# on implementation change:     revision++
+# on interface change:          revision=0, current++
+# on interface addition:        age++
+# on interface removal:         age=0
+
+lib_version=1:0:0
+AC_SUBST(lib_version)
+
+
+AM_ENABLE_SHARED(no)
+AM_ENABLE_STATIC(yes)
+
+
+dnl The following 'case' was borrowed from SAMBA's 'configure.in'
+dnl Check and set OS specific parameters.
+case "$target_os" in
+*linux*)
+	AC_DEFINE(__linux__)
+	;;
+
+*solaris*)
+	AC_DEFINE(__solaris__)
+	;;
+
+*sunos*)
+	;; 
+	
+*bsd*)
+	;;
+	
+*irix*)
+	;;
+	
+*aix*)
+	;;
+	
+*hpux*)
+	;;
+	
+*qnx*)
+	;;
+	
+*osf*)
+	;;
+	
+*sco*)
+	;;
+	
+*next2*)
+	;;
+	
+*dgux*)
+	;;
+	
+*sysv4*)
+	;;
+	
+*sysv5*)
+	;;
+	
+*)
+	;;
+esac
+
+
+dnl 如果用户没有在environment中指定CXXFLAGS和CFLAGS，则我先default它们，这样
+dnl AC_PROG_CC、AC_PROG_CXX将不再设置它们。
+if test -z "$CXXFLAGS"
+then
+        CXXFLAGS=""
+fi
+if test -z "$CFLAGS"
+then
+	CFLAGS=""
+fi
+
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_CXX
+AC_PROG_CXXCPP
+AM_PROG_LIBTOOL
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_RANLIB
+AC_PROG_AWK
+AC_PROG_MAKE_SET
+
+
+AC_ARG_ENABLE(debug,
+[  --enable-debug          Enable compiler debug and turn off optimization [yes] ],
+enable_debug=$enableval,enable_debug=yes)
+
+dnl Set CXXFLAGS and CFLAGS
+if test "x$enable_debug" = "xyes"
+then
+	if test "x$ac_cv_prog_cxx_g" = xyes
+	then
+		CXXFLAGS="-g -Wreturn-type $CXXFLAGS"
+	fi
+	if test "x$ac_cv_prog_cc_g" = xyes
+	then
+		CFLAGS="-g -Wreturn-type $CFLAGS"
+	fi
+else
+        CXXFLAGS="-O3 -mpentiumpro $CXXFLAGS"
+	CFLAGS="-O3 -mpentiumpro $CFLAGS"
+fi
+
+
+AC_ARG_ENABLE(debug_malloc,
+[  --enable-debug-malloc   Enable turn on debug of 'ZLS_malloc()' [no] ],
+enable_debug_malloc=$enableval,enable_debug_malloc=no)
+
+if test "x$enable_debug_malloc" = "xyes"
+then
+	AC_DEFINE(ENABLE_DEBUG_ZLS_malloc)
+fi
+
+
+AC_ARG_ENABLE(overload_new,
+[  --enable-overload-new   Enable overload '::operator new()' [yes] ],
+enable_overload_new=$enableval,enable_overload_new=yes)
+
+if test "x$enable_overload_new" = "xyes"
+then
+	AC_DEFINE(ENABLE_OVERLOAD_OPERATOR_NEW)
+fi
+
+
+AC_ARG_ENABLE(assert,
+[  --disable-assert        Disable C/C++ assert macro [no] ],
+enable_assert=$enableval,enable_assert=yes)
+
+if test "x$enable_assert" = "xno"
+then
+	AC_DEFINE(NDEBUG)
+fi
+
+
+AC_ARG_ENABLE(zvm_debug,
+[  --enable-zvm-debug      Enable turn on zvm debug [yes] ],
+enable_zvm_debug=$enableval,enable_zvm_debug=yes)
+
+if test "x$enable_zvm_debug" = "xyes"
+then
+	AC_DEFINE(ENABLE_ZVM_DEBUG)
+fi
+
+
+AC_ARG_ENABLE(zvm_optimization,
+[  --enable-zvm-optimization  Enable turn on zvm optimization [yes] ],
+enable_zvm_optimization=$enableval,enable_zvm_optimization=yes)
+ 
+if test "x$enable_zvm_optimization" = "xyes"
+then
+        AC_DEFINE(ENABLE_ZVM_OPTIMIZATION, 2)
+fi
+
+
+AC_CHECK_THREADS
+if test "x$enable_threads" = "xyes"
+then
+	# perform some checks for reentrant functions
+	AC_CHECK_FUNCS(localtime_r)
+fi
+
+
+AC_CHECK_CXX_STL
+if test "x$ac_cv_cxx_stl" != "xyes"
+then
+	AC_MSG_ERROR([STL is not available])
+else
+	AC_DEFINE(HAVE_CXX_STL)
+fi
+
+AC_CHECK_CXX_EH
+if test "x$ac_cv_cxx_eh" != "xyes" 
+then
+	AC_MSG_ERROR([$CXX does provide correct exception handling])
+fi
+
+AC_CHECK_CXX_NS
+if test "x$ac_cv_cxx_ns" != "xyes"
+then
+	AC_MSG_ERROR([$CXX does not support namespaces])
+fi
+
+
+dnl Some checks by libzdk
+LIBZDK_CHECK
+
+AC_MSG_CHECKING(the name of struct icmp)
+AC_TRY_COMPILE([#include <sys/types.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netinet/ip_icmp.h>], struct icmphdr h;int c=h.type, HAVE_STRUCT_ICMPHDR=1,HAVE_STRUCT_ICMPHDR=0)
+if test $HAVE_STRUCT_ICMPHDR = 1 ; then
+	AC_DEFINE(HAVE_STRUCT_ICMPHDR)
+        AC_MSG_RESULT(struct icmphdr) ; 
+else 
+	AC_MSG_RESULT(struct icmp)
+fi
+
+AC_MSG_CHECKING(if tcp states are defined)
+AC_TRY_COMPILE([#include <sys/types.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>], int c=TCP_ESTABLISHED,HAVE_TCP_STATES=1,HAVE_TCP_STATES=0)
+if test $HAVE_TCP_STATES = 1 ; then
+	AC_DEFINE(HAVE_TCP_STATES)
+        AC_MSG_RESULT(yes) ; 
+else 
+	AC_MSG_RESULT(no)
+fi
+
+AC_MSG_CHECKING(for bsd-ish struct udphdr)
+AC_TRY_COMPILE([#include <sys/types.h>
+#include <netinet/in.h>
+#include <netinet/udp.h>], struct udphdr h;int c=h.uh_ulen,HAVE_STRUCT_UDPHDR=1,HAVE_STRUCT_UDPHDR=0)
+if test $HAVE_STRUCT_UDPHDR = 1 ; then
+	AC_DEFINE(HAVE_STRUCT_UDPHDR)
+        AC_MSG_RESULT(yes) ; 
+else 
+	AC_MSG_RESULT(no)
+fi
+
+
+dnl Checks for libraries.
+
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS(limits.h strings.h syslog.h unistd.h pthread_np.h sched.h sys/sched.h)
+
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_CHECK_SIZEOF(int,0)
+AC_CHECK_SIZEOF(long,0)
+AC_CHECK_SIZEOF(long long,0)
+AC_C_CONST
+AC_C_INLINE
+AC_TYPE_SIZE_T
+AC_HEADER_TIME
+AC_STRUCT_TM
+
+
+dnl Checks for library functions.
+AC_FUNC_STRFTIME
+AC_FUNC_VPRINTF
+AC_CHECK_FUNCS(nanosleep pthread_delay_np pthread_yield sched_yield pthread_attr_setstacksize)
+
+
+AC_OUTPUT(Makefile \
+zls/Makefile \
+zls/zfc/Makefile \
+zls/zvm/Makefile \
+zls/zlang/Makefile \
+tests/Makefile
+)

@@ -1,0 +1,49 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/lexer_shared_input_state.sa#1 $
+
+*)
+
+class ANTLR_LEXER_SHARED_INPUT_STATE is
+
+   attr column : INT;
+   attr line : INT;
+   attr token_start_column : INT;
+   attr token_start_line : INT;   
+   attr input : ANTLR_BYTE_BUFFER;
+   attr file_name : STR;
+   attr guessing : INT;
+
+   private init : SAME is
+      res : SAME := new;
+
+      res.line := 1;
+      res.column := 1;
+      res.token_start_column := 1;
+      res.token_start_line := 1;      
+      res.guessing := 0;
+
+      return res;
+   end;
+      
+   create ( inbuf : ANTLR_BYTE_BUFFER ) : SAME 
+      pre ~void( inbuf )	
+   is
+      res : SAME := init;
+      res.input := inbuf;
+      return res;
+   end;      
+      
+   create ( in : $ISTREAM ) : SAME 
+      pre ~void( in )	
+   is
+      inbuf : ANTLR_BYTE_BUFFER := #ANTLR_BYTE_BUFFER( in );      
+      res : SAME := #SAME( inbuf );
+      return res;
+   end;      
+   
+end;

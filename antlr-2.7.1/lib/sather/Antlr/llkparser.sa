@@ -1,0 +1,99 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/llkparser.sa#1 $
+
+*)
+
+class ANTLR_LLKPARSER{ TOKEN < $ANTLR_TOKEN, AST < $ANTLR_AST{AST} } is
+
+   include ANTLR_PARSER{ TOKEN, AST } create -> parser_create;
+   
+   private attr k : INT;
+   
+   create ( k : INT ) : SAME is
+      res : SAME := parser_create;
+      res.k := k;
+      return res;
+   end;
+   
+   create ( state : ANTLR_PARSER_SHARED_INPUT_STATE{TOKEN} , k : INT ) : SAME is
+      res : SAME := parser_create;
+      res.k := k;
+      res.input_state := state;
+      return res;
+   end;
+	
+   create ( token_buf : ANTLR_TOKEN_BUFFER{TOKEN} , k : INT ) : SAME is
+      res : SAME := parser_create;
+      res.k := k;
+      res.token_buffer := token_buf;
+      return res;
+   end;
+   
+   create ( lexer : $ANTLR_TOKEN_STREAM{TOKEN} , k : INT ) : SAME is
+      res : SAME := parser_create;
+      token_buf : ANTLR_TOKEN_BUFFER{TOKEN} := #ANTLR_TOKEN_BUFFER{TOKEN}( lexer );
+      res.token_buffer := token_buf;
+      return res;
+   end;
+   
+   -- Consume another token from the input stream.  Can only write sequentially!
+   -- If you need 3 tokens ahead, you must consume 3 times.
+   -- Note that it is possible to overwrite tokens that have not been matched.
+   -- For example, calling consume 3 times when k=2, means that the first token
+   -- consumed will be overwritten with the 3rd.
+   
+   consume is 
+      input_state.input.consume;
+   end;
+   
+   LA( i : INT ) : INT is
+      return input_state.input.LA(i);
+   end;
+   
+   LT( i : INT ) : TOKEN is
+      return input_state.input.LT(i);
+   end;
+
+   private trace( ee, rname : STR ) is 
+      trace_indent;
+      #OUT + ee + rname;
+      if ( input_state.guessing > 0 ) then
+	 #OUT + "; [guessing]";
+      else
+	 #OUT + "; ";
+      end;
+      
+      i : INT := 1;
+      loop while! ( i <= k );
+	    
+	 if ( i /= 1 ) then
+	    #OUT + ", ";
+	 end;
+	    
+	 #OUT + "LA(" + i + ")=" + LT(i).text;
+	    
+	 i := i + 1;
+      end;
+
+      #OUT + "\n";
+
+   end;
+
+   trace_in ( rname : STR ) is
+      trace_depth := trace_depth + 1;
+      trace("> ", rname);
+   end;
+
+   trace_out( rname : STR ) is
+      trace("< ", rname);
+      trace_depth := trace_depth - 1;
+   end;
+   
+end;
+
+

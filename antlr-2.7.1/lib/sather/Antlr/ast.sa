@@ -1,0 +1,60 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/ast.sa#1 $
+
+*)
+
+abstract class $ANTLR_AST{ AST < $ANTLR_AST{AST} } is
+
+   equals( t : AST ) : BOOL;
+
+   equals_list( t : AST ) : BOOL ;
+   equals_list_partial( t : AST ) : BOOL; 
+
+   equals_tree( t : AST) : BOOL ;
+   equals_tree_partial( t : AST ) : BOOL;
+
+   find_all( tree : AST ) : ARRAY{AST};
+   find_all_partial( subtree : AST ) : ARRAY{AST};
+   
+   dup : AST;
+   create( t : INT, txt : STR ) : AST;
+   create_from_ast( t : AST ) : AST;
+   create_from_token( t : $ANTLR_TOKEN ) : AST;
+   
+   -- add a (rightmost child to this node
+   add_child( c : AST );
+   
+   -- Get the first child of this node; null if no children
+   first_child : AST;
+
+   -- Set the first child of a node.
+   first_child( c : AST );
+
+   -- Get the next sibling in line after this one
+   next_sibling : AST;
+
+   -- Set the next sibling after this one.
+   next_sibling( n : AST );
+
+   -- Get the token text for this node
+   text : STR;
+
+   -- Set the token text for this node
+   text( text : STR );
+
+   -- Get the token type for this node
+   ttype : INT;
+
+   -- Set the token type for this node
+   ttype( ttype : INT );
+
+   str : STR;
+   str_list : STR;
+   str_tree : STR;
+
+end;

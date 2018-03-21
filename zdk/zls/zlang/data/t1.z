@@ -1,0 +1,85 @@
+/*
+ * 这个用来测试ZLang compiler的语法分析。
+ */
+
+extern table<string> egt1;
+extern table<ipaddress> egf1(sdword sdw, string s, pport p1);
+extern udword udw1, udw3;
+
+/*
+ * 全局变量.
+ */
+sdword a=0x1ff;
+pport pport1={80/tcp}, pport2, pport3={1024/udp};
+table<udword> gt1 = {{80/tcp} = 80, "12\xFA" = 2500, "456" = 65535};
+table<string> gt2;
+
+/*
+ * global function.
+ */
+udword gf1(double i,string & s)
+{
+  udword l1=100 + 23*32 -(75/69)%2 | 255 & 254 ^ 253 >> 2 << 3;
+  double d1=0.128;
+  bool b=false;
+  sdword sdw;
+  table<string> lt;
+
+  l1=i+l1;
+  ++l1;
+  --l1;
+  l1++;
+  l1--;
+  //~l1;
+
+  if (l1 > 1000 && ! b)
+  {
+    return(1);
+  }
+  else
+  {
+    return(0);
+  }
+}
+
+/*
+ * 全局变量.
+ */
+ipaddress ip1={192.68.8.90}, ip2={192.168.8.91/24};
+
+/*
+ * static function.
+ */
+static void sf1(string s)
+{
+  table<udword> t1 = {"abc" = 128, "def" = 129};
+  pport p1 = {80/tcp};
+  bool b1 =false;
+  string stmp = "test";
+
+  t1["xyz"]=255;
+  b1=(bool)254;
+  gf1(10,stmp);
+}
+
+/*
+ * global function.
+ */
+string gf2()
+{
+  string s1="a string \r\n then continue;";
+  ipaddress i1={develop.soho.com.cn};
+  pport p1={80/tcp};
+
+  return(s1);
+}
+
+/*
+ * static function.
+ */
+static table<string> sf2(table<udword> & audw, string s)
+{
+  table<string> astring;
+  return astring;
+}
+

@@ -1,0 +1,63 @@
+t is  ( = a 1 )
+u is  ( = b )
+v is  ( = 4 )
+w is  =
+
+t.equals_tree(t) is true
+t.equals_tree(u) is false
+t.equals_tree(v) is false
+t.equals_tree(w) is false
+t.equals_tree(void) is false
+
+t.equals_tree_partial(t) is true
+t.equals_tree_partial(u) is false
+t.equals_tree_partial(v) is false
+t.equals_tree_partial(w) is true
+t.equals_tree_partial(void) is true
+
+a is  ( A ( B C ( A B ) ) ( A B ) ( F ( A B ) ) ( A ( A B ) ) ) J
+
+              A---------------------J
+              |
+              B-----A-----F----A
+              |     |     |    |
+              C--A  B     A    A
+                 |        |    |
+                 B        B    B
+
+x is second sibling of upperleftmost A:  ( A B ) ( F ( A B ) ) ( A ( A B ) )
+y is child B of x:  B
+x.equals_tree(@(A B)) is true
+x.equals_list(@(A B)) is false
+x.equals_list_partial(@(A B)) is true
+a.equals_tree(@(A B)) is false
+a.equals_tree_partial(@(A B)) is true
+y.equals_list(@[B]) is true
+y.equals_list_partial(@[B]) is true
+
+a.find_all_partial(@(A B)):
+ ( A ( B C ( A B ) ) ( A B ) ( F ( A B ) ) ( A ( A B ) ) ) J
+ ( A B )
+ ( A B ) ( F ( A B ) ) ( A ( A B ) )
+ ( A B )
+ ( A B )
+
+a.find_all_partial(@[A])):
+ ( A ( B C ( A B ) ) ( A B ) ( F ( A B ) ) ( A ( A B ) ) ) J
+ ( A B )
+ ( A B ) ( F ( A B ) ) ( A ( A B ) )
+ ( A B )
+ ( A ( A B ) )
+ ( A B )
+
+a.find_all(@(A B)):
+ ( A B )
+ ( A B ) ( F ( A B ) ) ( A ( A B ) )
+ ( A B )
+ ( A B )
+
+Test results:
+equals_tree is ok
+equals_tree_partial is ok
+equals_list is ok
+equals_list_partial is ok

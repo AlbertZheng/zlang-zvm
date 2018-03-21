@@ -1,0 +1,33 @@
+class MAIN is
+   main ( args : ARRAY{STR} ) is
+
+      if ( args.size < 2 ) then
+	 #OUT + "usage " + args[0] + " <filename>\n";
+	 return;
+      end;
+	 
+      f : IFSTREAM := IFSTREAM::open_for_read( args[1] );
+
+      if ( void(f) ) then
+	 #OUT + "file \"" + args[1] + "\" not found\n";
+	 return;
+      end;
+
+      t ::= #T{ANTLR_COMMON_TOKEN}( f );
+      token : $ANTLR_TOKEN;
+
+      protect
+	 loop 
+	    token := t.next_token;
+	    if ( token.ttype = T_TOKENTYPES::EOF ) then
+	       break!;
+	    end;
+	    #OUT + token.str + '\n';
+	 end;
+      when $ANTLR_RECOGNITION_EXCEPTION then
+	 #ERR + "error: " + exception.str;
+      end;
+
+   end;
+end;
+

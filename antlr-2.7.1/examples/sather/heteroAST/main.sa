@@ -1,0 +1,34 @@
+class MAIN is
+   main ( args : ARRAY{STR} ) is
+
+      if ( args.size < 2 ) then
+	 #OUT + "usage " + args[0] + " <filename>\n";
+	 return;
+      end;
+	 
+      f : IFSTREAM := IFSTREAM::open_for_read( args[1] );
+
+      if ( void(f) ) then
+	 #OUT + "file \"" + args[1] + "\" not found\n";
+	 return;
+      end;
+
+      protect
+	 lexer  ::= #CALC_LEXER{ANTLR_COMMON_TOKEN}( f );
+	 parser ::= #CALC_PARSER{ANTLR_COMMON_TOKEN, $CALC_AST}( lexer );
+
+	 parser.expr;
+	 
+	 t : $CALC_AST := parser.ast;
+
+	 #OUT + t.str_tree + "\n";
+	 
+	 #OUT + "value is " + t.val + "\n";
+
+      when $ANTLR_RECOGNITION_EXCEPTION then
+	 #ERR + "exception: " + exception.str + "\n";	 
+      end;
+      
+   end;
+end;
+

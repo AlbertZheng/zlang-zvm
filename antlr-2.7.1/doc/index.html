@@ -1,0 +1,314 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<title>ANTLR Reference Manual</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<table border="0">
+  <tr>
+    <td align="center" valign="top" width="120"><br>
+    <a href="http://www.jguru.com"><img src="j-guru-blue.jpg" width="70" height="80"
+    alt="j-guru-blue.jpg (8086 bytes)" border="0"></a><p><a href="http://www.antlr.org"
+    style="color: rgb(255,255,255)"><font face="Arial" color="#000000"><small><strong>ANTLR</strong></small></font></a></p>
+    <p><a href="http://www.jguru.com"><small><font face="Arial" color="#000000"><strong>jGuru</strong></font></small></a></td>
+    <td></td>
+    <td valign="top" width="520"><p align="center"><font size="7" face="Courier New"><strong>ANTLR<br>
+    Reference Manual<br>
+    </strong></font><br>
+    <big><big><big><font face="Arial">Credits</font></big></big></big></p>
+    <p align="center"><font face="Arial">Project Lead<br>
+    <a href="mailto:parrt@jguru.com"><em>Terence Parr</em></a></font></p>
+    <p align="center"><font face="Arial">Support from<br>
+    <em><a href="http://www.jguru.com">jGuru.com</a><br>
+    Your View of the Java Universe</em></font></p>
+    <p align="center"><font face="Arial">Help with initial coding<br>
+    <em>John Lilly, <a href="http://www.Empathy.com">Empathy Software</a> </em></font></p>
+    <p align="center"><font face="Arial">C++ code generator by<br>
+    <a href="mailto:pete@yamuna.demon.co.uk"><em>Peter Wells</em></a></font> and <font
+    face="Arial"><a href="mailto:klaren@cs.utwente.nl"><em>Ric Klaren</em></a></font></p>
+    <p align="center"><font face="Arial">Sather code generator by<br>
+    <a href="mailto:illouz@pacbell.net"><em>Mika Illouz</em></a></font></p>
+    <p align="center"><font face="Arial">Infrastructure support from <a
+    href="http://www.perforce.com">Perforce</a>:<br>
+    The world's best source code control system</font></p>
+    <p align="center"><font face="Arial">Substantial intellectual effort donated by<br>
+    <em><a href="mailto:johnm@magelang.com">John Mitchell</a><br>
+    <a href="mailto:thetick@magelang.com">Scott Stanchfield</a><br>
+    <a href="mailto:jcoker@magelang.com">Jim Coker</a><br>
+    <a href="mailto:mzukowski@bco.com">Monty Zukowski </a>(Streams, translation)<br>
+    <a href="mailto:flack@cs.purdue.edu">Chapman Flack</a> (UNICODE, streams)</em></font></p>
+    <p align="center"><font face="Arial"><a href="http://www.jguru.com/thetick/parseview">ParseView</a>
+    parser debugger by<br>
+    <a href="mailto:thetick@magelang.com"><em>Scott Stanchfield</em></a></font></p>
+    <p align="center">&nbsp;</p>
+    <div align="left"><pre><font face="Arial"><i>ANTLR Version 2.7.1
+</i><font size="1">Version: $Id: //depot/code/org.antlr/release/antlr-2.7.1/doc/index.html#3 $</font>
+<i>
+</i></font><font
+face="Arial" size="2"><em>October 1, 2000</em></font></pre>
+    </div><p><font face="Arial">Check out the <a
+    href="http://www.jguru.com/jguru/faq/faqpage.jsp?name=ANTLR">ANTLR FAQ at jguru.com!</a></font></p>
+    <p><font face="Arial">Check out the <a href="http://www.antlr.org/bug/index.html">Bug
+    Database </a><small>(ok, so it's out of date)</small></font></p>
+    <p align="left"><font face="Arial">Check out <a href="http://www.ANTLR.org">http://www.ANTLR.org</a></font></p>
+    <p><font face="Arial"><strong>ParseView</strong> debugger is <a
+    href="http://www.jguru.com/thetick/parseview">available</a>. <small>(for prior versions)</small></font></p>
+    <p><small><font face="Arial"><i>If you are looking for the previous main version (PCCTS
+    1.33) of ANTLR rather than the Java/C++/Sather version (2.x), see <a
+    href="http://www.ANTLR.org/pccts133.html">Getting started with PCCTS</a>.</i></font></small></p>
+    <hr>
+    <p>Download <a href="http://www.antlr.org/download">ANTLR 2.7.1</a>.</p>
+    <p><a href="antlr271release.html"><big><big>ANTLR 2.7.1 release notes</big></big></a></p>
+    <p><big><a href="metalang.html#_bb1">ANTLR Meta-Language</a></big><ul>
+      <li><a href="metalang.html#_bb2">Meta-Language Vocabulary </a></li>
+      <li><a href="metalang.html#_bb3">Header Section </a></li>
+      <li><a href="metalang.html#_bb4">Parser Class Definitions</a></li>
+      <li><a href="metalang.html#_bb5">Lexical Analyzer Class Definitions</a></li>
+      <li><a href="metalang.html#_bb6">Tree-parser Class Definitions</a></li>
+      <li><a href="metalang.html#_bb8">Options Section</a></li>
+      <li><a href="metalang.html#TokensSection">Tokens Section</a></li>
+      <li><a href="metalang.html#_bb9">Grammar Inheritance </a></li>
+      <li><a href="metalang.html#_bb10">Rule Definitions</a></li>
+      <li><a href="metalang.html#_bb11">Atomic Production elements </a></li>
+      <li><a href="metalang.html#_bb12">Simple Production elements </a></li>
+      <li><a href="metalang.html#_bb13">Production Element Operators </a></li>
+      <li><a href="metalang.html#_bb14">Token Classes</a></li>
+      <li><a href="metalang.html#_bb15">Predicates </a></li>
+      <li><a href="metalang.html#_bb16">Element Labels</a></li>
+      <li><a href="metalang.html#_bb17">EBNF Rule Elements</a></li>
+      <li><a href="metalang.html#_bb18">Interpretation Of Semantic Actions </a></li>
+      <li><a href="metalang.html#_bb19">Semantic Predicates </a></li>
+      <li><a href="metalang.html#_bb20">Syntactic Predicates </a><ul>
+          <li><a href="metalang.html#_bb21">Fixed depth lookahead and syntactic predicates</a></li>
+        </ul>
+      </li>
+      <li><a href="metalang.html#_bb22">ANTLR Meta-Language Grammar </a></li>
+    </ul>
+    <p><big><a href="lexer.html#_bb1">Lexical Analysis with ANTLR</a></big><ul>
+      <li><a href="lexer.html#_bb2">Lexical Rules</a> <ul>
+          <li><a href="lexer.html#_bb3">Return values</a></li>
+          <li><a href="lexer.html#_bb4">Skipping characters</a></li>
+          <li><a href="lexer.html#_bb5">Distinguishing between lexer rules</a></li>
+          <li><a href="lexer.html#_bb6">Definition order and lexical ambiguities</a></li>
+          <li><a href="lexer.html#_bb7">Keywords and literals</a></li>
+          <li><a href="lexer.html#_bb8">Common prefixes</a></li>
+          <li><a href="lexer.html#_bb9">Token definition files</a></li>
+          <li><a href="lexer.html#_bb10">Character classes</a></li>
+          <li><a href="lexer.html#_bb11">Token Attributes</a></li>
+          <li><a href="lexer.html#_bb12">Lexical lookahead and the end-of-token symbol</a></li>
+        </ul>
+      </li>
+      <li><a href="lexer.html#Scanning Binary Files">Scanning Binary Files</a></li>
+      <li><a href="lexer.html#unicode">Scanning Unicode Characters</a></li>
+      <li><a href="lexer.html#_bb13">Manipulating Token Text and Objects</a> <ul>
+          <li><a href="lexer.html#_bb14">Manipulating the Text of a Lexical Rule</a></li>
+          <li><a href="lexer.html#_bb15">Token Object Creation</a></li>
+          <li><a href="lexer.html#_bb16">Heterogeneous Token Object Streams</a></li>
+        </ul>
+      </li>
+      <li><a href="lexer.html#Filtering Input Streams">Filtering Input Streams</a><ul>
+          <li><a href="lexer.html#ANTLR Masquerading as SED">ANTLR Masquerading as SED</a></li>
+        </ul>
+      </li>
+      <li><a href="lexer.html#Nongreedy Subrules">Nongreedy Subrules</a><ul>
+          <li><a href="lexer.html#Greedy Parser Subrules">Greedy Subrules</a></li>
+          <li><a href="lexer.html#Nongreedy Lexer Subrules">Nongreedy Lexer Subrules</a></li>
+          <li><a href="lexer.html#Limitations of Greedy Subrules">Limitations of Nongreedy Subrules</a></li>
+        </ul>
+      </li>
+      <li><a href="lexer.html#LexicalStates">Lexical States</a></li>
+      <li><a href="lexer.html#The End Of File Condition">The End Of File Condition</a></li>
+      <li><a href="lexer.html#_bb17">Case sensitivity</a></li>
+      <li><a href="lexer.html#_bb18">Ignoring whitespace in the lexer</a></li>
+      <li><a href="lexer.html#_bb19">Tracking Line Information</a></li>
+      <li><a href="lexer.html#_bb20">Tracking Column Information</a></li>
+      <li><a href="lexer.html#_bb21">Using Explicit Lookahead</a></li>
+      <li><a href="lexer.html#_bb22">A Surprising Use of A Lexer: Parsing</a></li>
+      <li><a href="lexer.html#_bb23">But...We've Always Used Automata For Lexical Analysis!</a></li>
+    </ul>
+    <p><big><a href="sor.html#_bb1">ANTLR Tree Parsers</a></big><ul>
+      <li><a href="sor.html#_bb2">What's a tree parser?</a></li>
+      <li><a href="sor.html#_bb3">What kinds of trees can be parsed?</a></li>
+      <li><a href="sor.html#_bb4">Tree grammar rules</a> <ul>
+          <li><a href="sor.html#_bb5">Syntactic predicates</a></li>
+          <li><a href="sor.html#_bb6">Semantic predicates</a></li>
+          <li><a href="sor.html#_bb7">An Example Tree Walker</a></li>
+        </ul>
+      </li>
+      <li><a href="sor.html#_bb8">Transformations </a></li>
+      <ul>
+        <li><a href="sor.html#_bb9">An Example Tree Transformation</a></li>
+      </ul>
+      <li><a href="sor.html#Examining_Debugging ASTs">Examining/Debugging ASTs</a></li>
+    </ul>
+    <p><a href="streams.html"><big>Token Streams</big></a><ul>
+      <li><a href="streams.html#Introduction">Introduction</a></li>
+      <li><a href="streams.html#Pass-Through Token Stream">Pass-Through Token Stream</a></li>
+      <li><a href="streams.html#Token Stream Filtering">Token Stream Filtering</a></li>
+      <li><a href="streams.html#Token Stream Splitting">Token Stream Splitting</a><ul>
+          <li><a href="streams.html#Example">Example</a></li>
+          <li><a href="streams.html#Filter Implementation">Filter Implementation</a></li>
+          <li><a href="streams.html#How To Use This Filter">How To Use This Filter</a></li>
+          <li><a href="streams.html#Tree Construction">Tree Construction</a></li>
+          <li><a href="streams.html#Garbage Collection Issues">Garbage Collection Issues</a></li>
+          <li><a href="streams.html#Notes">Notes</a></li>
+        </ul>
+      </li>
+      <li><a href="streams.html#lexerstates">Token Stream Multiplexing (aka &quot;Lexer
+        states&quot;)</a><ul>
+          <li><a href="streams.html#Multiple Lexers">Multiple Lexers</a></li>
+          <li><a href="streams.html#Lexers Sharing Same Character Stream">Lexers Sharing Same
+            Character Stream</a></li>
+          <li><a href="streams.html#Parsing Multiplexed Token Streams">Parsing Multiplexed Token
+            Streams</a></li>
+          <li><a href="streams.html#The Effect of Lookahead Upon Multiplexed Token Streams">The Effect
+            of Lookahead Upon Multiplexed Token Streams</a></li>
+          <li><a href="streams.html#Multiple Lexers Versus Calling Another Lexer Rule">Multiple Lexers
+            Versus Calling Another Lexer Rule</a></li>
+        </ul>
+      </li>
+      <li><a href="streams.html#The Future">The Future</a></li>
+    </ul>
+    <p><a href="vocab.html"><big>Token Vocabularies</big></a><ul>
+      <li><a href="vocab.html#Introduction">Introduction</a><ul>
+          <li><a href="vocab.html#How does ANTLR decide which vocabulary symbol gets what token type?">How
+            does ANTLR decide which vocabulary symbol gets what token type?</a></li>
+          <li><a href="vocab.html#Why do token types start at 4?">Why do token types start at 4?</a></li>
+          <li><a href="vocab.html#What files associated with vocabulary does ANTLR generate?">What
+            files associated with vocabulary does ANTLR generate?</a></li>
+          <li><a
+            href="vocab.html#How does ANTLR synchronize the symbol-type mappings between grammars in the same file and in different files?">How
+            does ANTLR synchronize the symbol-type mappings between grammars in the same file and in
+            different files?</a></li>
+        </ul>
+      </li>
+      <li><a href="vocab.html#Grammar Inheritance and Vocabularies">Grammar Inheritance and
+        Vocabularies</a></li>
+      <li><a href="vocab.html#Recognizer Generation Order">Recognizer Generation Order</a></li>
+      <li><a href="vocab.html#Tricky Vocabulary Stuff">Tricky Vocabulary Stuff</a></li>
+    </ul>
+    <p><big><a href="err.html#_bb1">Error Handling and Recovery</a></big><ul>
+      <li><a href="err.html#ANTLR Exception Hierarchy">ANTLR Exception Hierarchy</a></li>
+      <li><a href="err.html#_bb2">Modifying Default Error Messages With Paraphrases</a></li>
+      <li><a href="err.html#_bb3">Parser Exception Handling</a></li>
+      <li><a href="err.html#_bb4">Specifying Parser Exception-Handlers</a></li>
+      <li><a href="err.html#Default Exception Handling in the Lexer">Default Exception Handling in
+        the Lexer</a></li>
+    </ul>
+    <p><big><a href="runtime.html#_bb1">Java Runtime Model</a></big><ul>
+      <li><a href="runtime.html#_bb2">Programmer's Interface</a></li>
+      <ul>
+        <li><a href="runtime.html#_bb3">What ANTLR generates</a></li>
+      </ul>
+      <li><a href="runtime.html#sharingstate">Multiple Lexers/Parsers With Shared Input State</a></li>
+      <li><a href="runtime.html#_bb4">Parser Implementation</a></li>
+      <ul>
+        <li><a href="runtime.html#_bb5">Parser Class</a></li>
+        <li><a href="runtime.html#_bb6">Parser Methods</a></li>
+        <li><a href="runtime.html#_bb7">EBNF Subrules</a></li>
+        <li><a href="runtime.html#_bb8">Production Prediction </a></li>
+        <li><a href="runtime.html#_bb9">Production Element Recognition </a></li>
+        <li><a href="runtime.html#_bb10">Standard Classes</a></li>
+      </ul>
+      <li><a href="runtime.html#_bb11">Lexer Implementation</a></li>
+      <ul>
+        <li><a href="runtime.html#_bb12">Lexer Form</a></li>
+        <li><a href="runtime.html#_bb13">Creating Your Own Lexer</a></li>
+        <li><a href="runtime.html#_bb14">Lexical Rules </a></li>
+      </ul>
+      <li><a href="runtime.html#_bb15">Token Objects</a></li>
+      <li><a href="runtime.html#_bb16">Token Lookahead Buffer</a></li>
+    </ul>
+    <p><big><a href="cpp-runtime.html#_bb1">C++ Runtime model</a></big><ul>
+      <li><a href="cpp-runtime.html#_notes">C++ notes</a></li>
+      <ul>
+        <li><a href="cpp-runtime.html#_buildruntime">Building the runtime</a></li>
+        <li><a href="cpp-runtime.html#_generatingcpp">Getting C++ output</a></li>
+        <li><a href="cpp-runtime.html#_changingasttype">Changing the AST Type</a></li>
+        <li><a href="cpp-runtime.html#_heteroast">Using Heterogeneous AST types</a></li>
+        <li><a href="cpp-runtime.html#_template">A grammar template</a></li>
+      </ul>
+    </ul>
+    <p><big><a href="sa-runtime.html#_bb1">Sather Runtime Model</a></big><ul>
+      <li><a href="sa-runtime.html#_bb2">Programmer's Interface</a></li>
+      <ul>
+        <li><a href="sa-runtime.html#_bb3">What ANTLR generates</a></li>
+      </ul>
+      <li><a href="sa-runtime.html#sharingstate">Multiple Lexers/Parsers With Shared Input State</a></li>
+      <li><a href="sa-runtime.html#_bb4">Parser Implementation</a></li>
+      <ul>
+        <li><a href="sa-runtime.html#_bb5">Parser Class</a></li>
+        <li><a href="sa-runtime.html#_bb6">Parser Methods</a></li>
+        <li><a href="sa-runtime.html#_bb7">EBNF Subrules</a></li>
+        <li><a href="sa-runtime.html#_bb8">Production Prediction </a></li>
+        <li><a href="sa-runtime.html#_bb9">Production Element Recognition </a></li>
+      </ul>
+      <li><a href="sa-runtime.html#_bb11">Lexer Implementation</a></li>
+      <ul>
+        <li><a href="sa-runtime.html#_bb12">Lexer Form</a></li>
+        <li><a href="sa-runtime.html#_bb13">Creating Your Own Lexer</a></li>
+        <li><a href="sa-runtime.html#_bb14">Lexical Rules </a></li>
+      </ul>
+    </ul>
+    <p><big><a href="trees.html#_bb1">ANTLR Tree Construction</a></big><ul>
+      <li><a href="trees.html#_bb2">Notation</a></li>
+      <li><a href="trees.html#_bb3">Controlling AST construction</a></li>
+      <li><a href="trees.html#_bb4">Grammar annotations for building ASTs</a></li>
+      <ul>
+        <li><a href="trees.html#_bb5">Leaf nodes</a></li>
+        <li><a href="trees.html#_bb6">Root nodes</a></li>
+        <li><a href="trees.html#_bb7">Turning off standard tree construction</a></li>
+        <li><a href="trees.html#_bb8">Tree node construction</a></li>
+        <li><a href="trees.html#_bb9">AST Action Translation</a></li>
+      </ul>
+      <li><a href="trees.html#_bb10">Invoking parsers that build trees</a></li>
+      <li><a href="trees.html#_bb11">AST Factories</a></li>
+      <li><a href="trees.html#Heterogeneous ASTs">Heterogeneous ASTs</a><ul>
+          <li><a href="trees.html#An Expression Tree Example"><font size="3">An Expression Tree
+            Example</font></a></li>
+          <li><a href="trees.html#Describing Heterogeneous Trees With Grammars">Describing
+            Heterogeneous Trees With Grammars</a></li>
+        </ul>
+      </li>
+      <li><a href="trees.html#AST Serialization">AST (XML) Serialization</a></li>
+      <li><a href="trees.html#_bb12">AST enumerations</a></li>
+      <li><a href="trees.html#_bb13">A few examples</a></li>
+      <li><a href="trees.html#_bb14">Labeled subrules</a></li>
+      <li><a href="trees.html#_bb15">Reference nodes</a></li>
+      <li><a href="trees.html#_bb16">Required AST functionality and form</a></li>
+    </ul>
+    <p><big><a href="inheritance.html#_bb1">Grammar Inheritance</a></big><ul>
+      <li><a href="inheritance.html#_bb2">Introduction and motivation</a></li>
+      <li><a href="inheritance.html#_bb3">Functionality</a></li>
+      <li><a href="inheritance.html#_bb4">Where Are Those Supergrammars?</a></li>
+      <li><a href="inheritance.html#_bb7">Error Messages</a></li>
+    </ul>
+    <p><a href="options.html#Options"><big>Options</big></a><ul>
+      <li><a href="options.html#File, Grammar, and Rule">File, Grammar, and Rule Options </a><ul>
+          <li><a href="options.html#_bb2">Options supported in ANTLR</a></li>
+          <li><a href="options.html#_bb3">language: Setting the generated language</a></li>
+          <li><a href="options.html#_bb4">k: Setting the lookahead depth </a></li>
+          <li><a href="options.html#importVocab">importVocab: Initial Grammar Vocabulary</a></li>
+          <li><a href="options.html#exportVocab">exportVocab: Naming Output Vocabulary</a></li>
+          <li><a href="options.html#_bb8">testLiterals: Generate literal-testing code</a></li>
+          <li><a href="options.html#_bb9">defaultErrorHandler: Controlling default exception-handling</a></li>
+          <li><a href="options.html#_bb10">codeGenMakeSwitchThreshold: controlling code generation</a></li>
+          <li><a href="options.html#_bb11">codeGenBitsetTestThreshold: controlling code generation</a></li>
+          <li><a href="options.html#_bb12">buildAST: Automatic AST construction </a></li>
+          <li><a href="options.html#_bb13">ASTLabelType: Setting label type</a></li>
+          <li><a href="options.html#_bb14">charVocabulary: Setting the lexer character vocabulary</a></li>
+          <li><a href="options.html#_bb15">warnWhenFollowAmbig</a></li>
+        </ul>
+      </li>
+      <li><a href="options.html#Command Line Options">Command Line Options</a></li>
+    </ul>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

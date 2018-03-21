@@ -1,0 +1,104 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/token_buffer.sa#1 $
+
+*)
+
+class ANTLR_TOKEN_BUFFER{ TOKEN < $ANTLR_TOKEN } is
+
+   -- MI: this has a lot in common with input_buffer/byte_buffer.
+   -- could possibly factor out common code using Sather's spiffy
+   -- parametrized class feature
+
+   -- Token source
+   private attr input : $ANTLR_TOKEN_STREAM{TOKEN};
+
+   -- Number of active markers
+   private attr n_markers : INT;
+   
+   -- Additional offset used when markers are active
+   private attr marker_offset : INT;
+
+   -- Number of calls to consume() since last LA() or LT() call
+   private attr num_to_consume : INT;
+
+   -- Circular queue
+   private attr queue : CIRCULAR_QUEUE{TOKEN};
+
+   init is 
+      num_to_consume := 0;
+      n_markers := 0;
+      marker_offset := 0;
+      queue := #CIRCULAR_QUEUE{TOKEN}(1);
+   end;
+   
+   -- Mark another token for deferred consumption 
+   consume is 
+      num_to_consume := num_to_consume + 1;
+   end;
+
+   -- Get a lookahead token value 
+   LA( i : INT ) : INT is
+      fill(i);
+      return queue[ marker_offset + i - 1].ttype;
+   end;
+
+   LT( i : INT ) : TOKEN is
+      fill(i);
+      return queue[ marker_offset + i - 1 ];
+   end;
+
+   -- Return an integer marker that can be used to rewind the buffer to
+   -- its current state.
+   mark : INT is 
+      sync_consume;
+      n_markers := n_markers + 1;
+      return marker_offset;
+   end;
+
+   -- Rewind the token buffer to a marker.
+   -- mark is the marker returned previously from mark()
+   rewind( mark : INT ) is
+      sync_consume;
+      marker_offset := mark;
+      n_markers := n_markers - 1;
+   end;
+   
+   -- Sync up deferred consumption 
+   private sync_consume is
+      loop while!( num_to_consume > 0 ); 
+	 if n_markers > 0 then
+	    -- guess mode -- leave leading tokens and bump offset.
+	    marker_offset := marker_offset + 1;
+	 else 
+	    -- normal mode; remove first token
+	    queue.remove_first;
+	 end;
+	 num_to_consume := num_to_consume - 1;
+      end;
+   end;
+   
+   -- Create a token buffer 
+   create ( in : $ANTLR_TOKEN_STREAM{TOKEN} ) : SAME pre ~void(in) is 
+      res : SAME := new;
+      res.input := in;
+      res.init;
+      return res;
+   end;
+
+   -- Ensure that the token buffer is sufficiently full 
+   fill( amount : INT ) is
+      sync_consume;
+
+      -- Fill the buffer sufficiently to hold needed tokens
+      loop while! ( queue.num_entries < amount + marker_offset );
+	 -- Append the next token
+	 queue.append( input.next_token );
+      end;
+   end;
+
+end;

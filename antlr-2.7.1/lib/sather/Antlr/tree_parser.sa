@@ -1,0 +1,135 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/tree_parser.sa#1 $
+
+*)
+
+class ANTLR_TREE_PARSER{AST < $ANTLR_AST{AST}} is
+
+   -- Where did this rule leave off parsing; avoids a return parameter 
+   private attr sa_ret_tree : AST;
+	
+   -- guessing nesting level; guessing=0 implies not guessing 
+   -- private attr guessing : INT;
+	
+   -- Nesting level of registered handlers 
+   -- private attr exception_level : INT ;
+
+   private attr input_state : ANTLR_TREE_PARSER_SHARED_INPUT_STATE;
+	
+   -- Table of token type to token names 
+   attr token_names : ARRAY{STR};
+
+   -- AST return value for a rule is squirreled away here 
+   private attr return_ast : AST;
+
+   -- Used to keep track of indentdepth for traceIn/Out
+   readonly attr trace_depth : INT;
+
+   -- AST support code; parser and treeparser delegate to this object
+   -- attr ast_factory : $ANTLR_AST_FACTORY;
+
+   create : SAME is 
+      res : SAME := new;
+      res.input_state := #ANTLR_TREE_PARSER_SHARED_INPUT_STATE;
+      res.trace_depth := 0;
+      -- res.ast_factory := #ANTLR_COMMON_AST_FACTORY;
+      return res;
+   end;
+
+   -- Get the AST return value squirreled away in the parser 
+   ast : AST is
+      return return_ast;
+   end;
+
+   token_name ( num : INT ) : STR is 
+      return token_names[num];
+   end;
+   
+   match( t : AST, ttype : INT ) is
+      if ( void(t) or SYS::is_eq( t , AST::ASTNULL ) or t.ttype /= ttype ) then
+	 raise #ANTLR_MISMATCHED_TOKEN_EXCEPTION{AST}( token_names, t, ttype, false );
+      end;
+   end;
+
+   -- Make sure current lookahead symbol matches the given set
+   -- Throw an exception upon mismatch, which is catch by either the
+   -- error handler or by the syntactic predicate.
+
+   match( t : AST, b : INT_SET ) is
+      if ( void(t) or SYS::is_eq( t , AST::ASTNULL ) or ~b.member(t.ttype) ) then
+	 raise #ANTLR_MISMATCHED_TOKEN_EXCEPTION{AST}( token_names, t, b, false);
+      end;
+   end;
+
+   match_not(t : AST, ttype : INT ) is
+      if ( void(t) or SYS::is_eq( t , AST::ASTNULL ) or t.ttype /= ttype ) then
+	 raise #ANTLR_MISMATCHED_TOKEN_EXCEPTION{AST}( token_names, t, ttype, true );
+      end;
+   end;
+
+   panic is
+      #ERR + "TREE_WALKER: panic\n";
+      UNIX::exit(1);
+   end;
+	
+   -- Parser error-reporting function can be overridden in subclass 
+   report_error( ex : $ANTLR_RECOGNITION_EXCEPTION ) is
+      #ERR + ex.str + "\n";
+   end;
+
+   -- Parser error-reporting function can be overridden in subclass
+   report_error( s : STR ) is
+      #ERR + "error: " + s + "\n";
+   end;
+
+   -- Parser warning-reporting function can be overridden in subclass 
+   report_warning( s : STR ) is
+      #ERR + "warning: " + s + "\n";
+   end;
+
+   trace_indent is
+      i : INT := 1;      
+      loop while! ( i < trace_depth );
+	 #OUT + " ";
+	 i := i + 1;
+      end;
+   end;
+
+   trace_in( rname : STR, t : AST ) is
+      trace_depth := trace_depth + 1;
+      trace_indent;
+      #OUT + "> " + rname + "(";
+      if ( void(t) ) then
+	 #OUT + "null";
+      else
+	 #OUT + t.str;
+      end;
+      #OUT + ")";
+      if ( input_state.guessing > 0 ) then
+	 #OUT + " [guessing]";
+      end;
+      #OUT + "\n";
+   end;
+   
+   trace_out( rname : STR, t : AST ) is
+      trace_indent;
+      #OUT + "< " + rname + "(";
+      if ( void(t) ) then
+	 #OUT + "null";
+      else
+	 #OUT + t.str;
+      end;
+      #OUT + ")";
+      if ( input_state.guessing > 0 ) then
+	 #OUT + " [guessing]";
+      end;
+      #OUT + "\n";
+      trace_depth := trace_depth - 1;
+   end;
+
+end;

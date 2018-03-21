@@ -1,0 +1,7 @@
+-o main main.sa
+
+../../../lib/sather/Library.module
+
+-has HTML_LEXER.sa        HTML_LEXER
+-has HTML_TOKENTYPES.sa   HTML_TOKENTYPES
+-has HTML_PARSER.sa       HTML_PARSER

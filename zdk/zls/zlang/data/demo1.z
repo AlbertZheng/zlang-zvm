@@ -1,0 +1,300 @@
+#include <standard.zh>
+
+// 测试宏
+#define STRING_TESTING_OVER   "Testing over"
+
+
+// for testing 'extern'
+extern table<pport> Gtport2, Gtport3;
+
+extern void TestGlobalVariable();
+extern void TestOperator();
+extern void TestReferenceArgument(string & rs, table<string> & ras,
+                                  sdword & rsdw, table<sdword> & rasdw);
+extern void TestSpeed();
+extern ipaddress TestTempVariable();
+extern pport TestShortCircuit();
+
+
+
+// 测试C++ Native function返回reference address给ZLang script
+extern string & GetStringReference();
+extern sdword & GetSDWORDReference();
+
+
+//bool main(var string stringUser, string stringCommand)
+string demo1(string & stringUser, string stringCommand)
+{
+  bool b = true;
+  byte uch = 88;
+  sdword sdw = -2147483648;
+  udword udw = 4294967295;
+  sqword sqw = -9223372036854775808L;
+  uqword uqw = 18446744073709551615L;
+  double df = 3.1415926;
+  pport port = {80/tcp};
+  ipaddress ip = {192.168.8.90/32};
+  string s = "this is a test";
+
+  table<bool> ab = {0 = false, 1 = true};
+  table<byte> auch = {'A' = 1, 'B' = 128, "C" = 255};
+  table<sdword> asdw = {-1 = -1, -256 = -256, -1024 = -1024};
+  table<udword> audw = {1 = 1, 256 = 256, 1024 = 1024};
+  table<sqword> asqw = {-1 = -1, -256 = -256, -1024 = -1024};
+  table<uqword> auqw = {1 = 1, 256 = 256, 1024 = 1024};
+  table<double> adf = {0.1 = 0.1, 0.01 = 0.01, 0.001 = 0.001};
+  table<pport> aport = {"http" = {80/tcp}, "ftp" = {21/tcp}};
+  table<ipaddress> aip = { "develop" = {192.168.8.90}, "soho.com.cn" = {192.168.8.0/24}};
+  table<string> as = {1 = "this is a test", 2 = "hope all are ok"};
+
+  string stringTestResult;
+  table<string> astringPretty;
+
+  // 测试C++ Native function返回reference address给ZLang script
+  string & rsTest1 = GetStringReference();
+  sdword & rsdwTest1 = GetSDWORDReference();
+
+  uqword uqwEndTime;
+  uqword uqwBeginTime = Time();
+
+  //TestSpeed();
+  //return true;
+  //return "ok";
+
+  /* 测试简单地调用ZLang function和Native function */
+  astringPretty = ToPrettyString(stringUser, stringCommand);
+  PrintlnString("\n----------------------------------------------------------------");
+  PrintlnString("Simple testing");
+  PrintlnString(stringUser);
+  PrintlnString(stringCommand);
+  PrintlnString(astringPretty[0]);
+  PrintlnString(astringPretty[1]);
+  PrintlnString(astringPretty["root"]);
+
+  PrintlnString("\n----------------------------------------------------------------");
+  PrintlnString("Testing global variable");
+  TestGlobalVariable();
+
+  PrintlnString("\n----------------------------------------------------------------");
+  PrintlnString("Testing all kind of ZLang operator");
+  TestOperator();
+
+  /* 复杂调用测试 */
+  PrintlnString("\n----------------------------------------------------------------");
+  PrintlnString("A lot of testing");
+  //stringTestResult = TestAll(b, ab, uch, auch, sdw, asdw, udw, audw, df, adf, port, aport, ip, aip, s, ToPrettyString(stringUser, stringCommand));
+  stringTestResult = TestAll(b, ab, uch, auch, sdw, asdw, udw, audw, sqw, asqw, uqw, auqw, df, adf, port, aport, ip, aip, s, as);
+  PrintlnString("----------------------------------------------------------------");
+
+  /* 测试引用参数 */
+  TestReferenceArgument(stringUser, astringPretty, sdw, asdw);
+  PrintlnString("Modified string value : ");
+  PrintlnString(stringUser);
+  PrintlnString("Modified element value of string table : ");
+  PrintlnString(astringPretty[1]);
+  PrintlnString(astringPretty[2]);  // Auto created element
+  PrintlnString("Modified sdword value, shoule be -1 : ");
+  PrintlnSDWORD(sdw);
+  PrintlnString("Modified element value of sdword table, shoule be -128 and -2147483648 : ");
+  PrintlnSDWORD(asdw[1]);  // Auto created element
+  PrintlnSDWORD(asdw[2]);  // Auto created element
+
+  PrintlnString("\n----------------------------------------------------------------");
+  PrintlnString("Testing temp variable");
+  PrintlnIPAddress(TestTempVariable());
+  PrintlnString("----------------------------------------------------------------");
+
+  PrintlnString("\n----------------------------------------------------------------");
+  PrintlnString("Testing short circuit");
+  PrintlnPPort(TestShortCircuit());
+  PrintlnString("----------------------------------------------------------------");
+
+  PrintlnString(stringTestResult);
+
+  // 修改"引用参数"，以测试回到C++后，ZVM对"引用参数"的解释是否正确
+  stringUser = "NetDefender-1";
+
+  // 修改C++给的string &、sdword &，以测试回到C++后，ZVM的解释是否正确
+  rsTest1 = "return reference is ok";
+  rsdwTest1 = 188;
+
+  uqwEndTime = Time();
+  PrintString("\nBegin at -> ");
+  PrintlnUQWORD(uqwBeginTime);
+  PrintString("End at -> ");
+  PrintlnUQWORD(uqwEndTime);
+
+  /*
+  if (stringUser == "root")
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+  */
+  return stringUser;
+}
+
+
+static void DummyFunction()
+{
+}
+
+
+static table<string> ToPrettyString(string & stringUser, string & stringCommand)
+{
+  //string stringPretty = "用户 '" + stringUser + "' is executing '" + stringCommand + "'";
+  string stringPretty = stringCommand + "'";
+  table<string> astringResult;
+
+  // 测试优先级被强制后string temp variable的正确性
+  stringPretty = ("用户 '" + stringUser) + ("' is executing '" + stringPretty);
+
+  astringResult[0] = stringPretty;
+  astringResult[1] = stringPretty;
+  astringResult["root"] = stringPretty;
+  return astringResult;
+}
+
+
+string TestAll(bool b, table<bool> ab, byte uch, table<byte> auch,
+               sdword sdw, table<sdword> asdw, udword udw, table<udword> audw,
+               sqword sqw, table<sqword> asqw, uqword uqw, table<uqword> auqw,
+               double df, table<double> adf, pport port, table<pport> aport,
+               ipaddress ip, table<ipaddress> aip, string s, table<string> as)
+{
+  //sdword sdwRecursionResult;
+
+  PrintlnString("Testing");
+
+  // 测试参数传递是否正确
+  PrintlnString("Should be 'true' 'false' 'true'");
+  PrintlnBool(b);
+  PrintlnBool(ab[0]);
+  PrintlnBool(ab[1]);
+
+  PrintlnString("Should be '88' '1' '128' '255'");
+  PrintlnByte(uch);
+  PrintlnByte(auch['A']);
+  PrintlnByte(auch['B']);
+  PrintlnByte(auch["C"]);
+
+  PrintlnString("Should be '-2147483648' '-1' '-256' '-1024'");
+  PrintlnSDWORD(sdw);
+  PrintlnSDWORD(asdw[-1]);
+  PrintlnSDWORD(asdw[-256]);
+  PrintlnSDWORD(asdw[-1024]);
+
+  PrintlnString("Should be '4294967295' '1' '256' '1024'");
+  PrintlnUDWORD(udw);
+  PrintlnUDWORD(audw[1]);
+  PrintlnUDWORD(audw[256]);
+  PrintlnUDWORD(audw[1024]);
+
+  PrintlnString("Should be '-9223372036854775808' '-1' '-256' '-1024'");
+  PrintlnSQWORD(sqw);
+  PrintlnSQWORD(asqw[-1]);
+  PrintlnSQWORD(asqw[-256]);
+  PrintlnSQWORD(asqw[-1024]);
+
+  PrintlnString("Should be '18446744073709551615' '1' '256' '1024'");
+  PrintlnUQWORD(uqw);
+  PrintlnUQWORD(auqw[1]);
+  PrintlnUQWORD(auqw[256]);
+  PrintlnUQWORD(auqw[1024]);
+
+  PrintlnString("Should be '3.14159' '0.1' '0.01' '0.001'");
+  PrintlnDouble(df);
+  PrintlnDouble(adf[0.1]);
+  PrintlnDouble(adf[0.01]);
+  PrintlnDouble(adf[0.001]);
+
+  PrintlnString("Should be '80/tcp' '80/tcp' '21/tcp'");
+  PrintlnPPort(port);
+  PrintlnPPort(aport["http"]);
+  PrintlnPPort(aport["ftp"]);
+
+  PrintlnString("Should be '192.168.8.90/255.255.255.255' '192.168.8.90/255.255.255.255' '192.168.8.0/255.255.255.0'");
+  PrintlnIPAddress(ip);
+  PrintlnIPAddress(aip["develop"]);
+  PrintlnIPAddress(aip["soho.com.cn"]);
+
+  PrintlnString("Should be 'this is a test' 'this is a test' 'hope all are ok'");
+  PrintlnString(s);
+  PrintlnString(as[1]);
+  PrintlnString(as[2]);
+
+  // 测试function递归和function调用作为参数
+  PrintlnString("Testing function recursion");
+  //sdwRecursionResult = TestRecursion(0);
+  //PrintlnSDWORD(sdwRecursionResult);
+  PrintlnSDWORD(TestRecursion(0));
+
+  // 测试assign的左传递
+  PrintlnString("Should be '188' '88'");
+  PrintlnSDWORD(100 + (sdw=88));  // 作为二元操作符的右值
+  PrintString("now sdw ? ");
+  PrintlnSDWORD(sdw);
+
+  PrintlnString("Should be '188' '188'");
+  PrintlnSDWORD((sdw=188) - 0);  // 作为二元操作符的左值
+  PrintString("now sdw ? ");
+  PrintlnSDWORD(sdw);
+
+  PrintlnString("Should be '-188' '188'");
+  PrintlnSDWORD(-(sdw=188));  // 作为一元操作符的左值
+  PrintString("now sdw ? ");
+  PrintlnSDWORD(sdw);
+
+  PrintlnString("Should be '188' '188'");
+  PrintlnUDWORD((udword)(sdw=188));  // 作为cast操作符的右值
+  PrintString("now sdw ? ");
+  PrintlnSDWORD(sdw);
+
+  PrintlnString("Should be '188' '188'");
+  PrintlnSDWORD((sdw=188));  // 作为function调用的参数
+  PrintString("now sdw ? ");
+  PrintlnSDWORD(sdw);
+
+  PrintlnString("Should be '-1' '-1'");
+  PrintlnSDWORD(asdw[sdw=-1]);  // 作为table的key
+  PrintString("now sdw ? ");
+  PrintlnSDWORD(sdw);
+
+  PrintlnString("Should be '188'");
+  udw = sdw = asdw[-1] = asdw[-256] = 188;  // 嵌套assign
+  PrintlnUDWORD(udw);
+
+  //return "Testing over";
+  return STRING_TESTING_OVER;
+}
+
+
+static sdword TestRecursion(sdword sdwLevel)
+{
+  //sdword sdwReturn;
+
+  //++sdwLevel;
+  sdwLevel = sdwLevel + 1;
+  //PrintlnSDWORD(sdwLevel);
+
+  if (sdwLevel < 150)
+  {
+    //sdwReturn = TestRecursion(sdwLevel);
+    //PrintlnString("return");
+    //PrintlnSDWORD(sdwReturn);
+    //return sdwReturn;
+
+    // 已经支持直接将function的结果assign给隐含的result argument（采用的是stack variable addres）
+    return TestRecursion(sdwLevel);
+  }
+  else
+  {
+    //PrintlnString("last return");
+    //PrintlnSDWORD(sdwLevel);
+    return sdwLevel;
+  }
+}
+

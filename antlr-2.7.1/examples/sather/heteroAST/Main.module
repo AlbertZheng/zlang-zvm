@@ -1,0 +1,13 @@
+-o main main.sa
+
+../../../lib/sather/Library.module
+
+-has CALC_LEXER.sa               CALC_LEXER
+-has CALC_PARSER_TOKENTYPES.sa   CALC_PARSER_TOKENTYPES
+-has CALC_PARSER.sa              CALC_PARSER                 
+
+-has calc_ast.sa                $CALC_AST 
+-has calc_ast.sa                 CALC_AST 
+-has calc_ast.sa                 INT_NODE
+-has calc_ast.sa                 MULT_NODE
+-has calc_ast.sa                 PLUS_NODE

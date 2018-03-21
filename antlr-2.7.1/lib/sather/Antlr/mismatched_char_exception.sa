@@ -1,0 +1,151 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/mismatched_char_exception.sa#1 $
+
+*)
+
+class ANTLR_MISMATCHED_CHAR_EXCEPTION < $ANTLR_RECOGNITION_EXCEPTION is
+
+   include ANTLR_RECOGNITION_EXCEPTION 
+	 message -> super_message;
+   
+   -- Types of tokens
+   const CHAR      : INT := 1; -- will CHAR confilict with class CHAR? hmm...
+   const NOT_CHAR  : INT := 2;
+   const RANGE     : INT := 3;
+   const NOT_RANGE : INT := 4;
+   const SET       : INT := 5;
+   const NOT_SET   : INT := 6;
+
+   -- One of the above
+   attr mismatch_type : INT;
+
+   -- For CHAR/NOT_CHAR and RANGE/NOT_RANGE
+   attr expecting : CHAR;
+
+   -- For RANGE/NOT_RANGE (expecting is lower bound of range)
+   attr upper : CHAR;
+
+   -- For SET/NOT_SET
+   attr set : CHAR_SET;
+
+   -- what was found on the input stream
+   attr found_char : CHAR;
+
+   -- who knows...they may want to ask scanner questions
+   attr scanner : $ANTLR_FILE_CURSOR;
+
+   -- Expected range / not range
+   create( c        : CHAR, 
+	  lower     : CHAR, 
+	  upper_    : CHAR, 
+	  match_not : BOOL, 
+	  scanner_  : $ANTLR_FILE_CURSOR ) : SAME is
+
+      res : SAME := #SAME("Mismatched char");
+      res.found_char := c;
+      res.expecting := lower;
+      res.upper := upper_;
+      -- get instantaneous values of file/line/column
+      res.line := scanner_.line;
+      res.file_name := scanner_.file_name;
+      res.column := scanner_.column;
+      res.scanner := scanner_;
+
+      if ( match_not ) then
+	 res.mismatch_type := NOT_RANGE;
+      else 
+	 res.mismatch_type := RANGE;
+      end;
+
+      return res;
+   end;
+
+   -- Expected char / not char
+   create ( c         : CHAR, 
+	   expecting_ : CHAR, 
+	   match_not  : BOOL, 
+	   scanner_   : $ANTLR_FILE_CURSOR ) : SAME is
+      
+      res : SAME := #SAME("Mismatched char");
+      res.found_char := c;
+      res.expecting := expecting_;
+      -- get instantaneous values of file/line/column
+      res.line := scanner_.line;
+      res.file_name := scanner_.file_name;
+      res.column := scanner_.column;
+      res.scanner := scanner_;
+
+      if ( match_not ) then
+	 res.mismatch_type := NOT_CHAR;
+      else 
+	 res.mismatch_type := CHAR;
+      end;
+
+      return res;
+   end;
+   
+   -- Expected CHAR_SET / not CHAR_SET
+   create ( c        : CHAR, 
+	   set_      : CHAR_SET, 
+	   match_not : BOOL, 
+	   scanner_  : $ANTLR_FILE_CURSOR ) : SAME is
+
+      res ::= #SAME("Mismatched char");
+      res.found_char := c;
+      res.set := set_;
+      -- get instantaneous values of file/line/column
+      res.line := scanner_.line;
+      res.file_name := scanner_.file_name;
+      res.column := scanner_.column;
+      res.scanner := scanner_;
+
+      if ( match_not ) then
+	 res.mismatch_type := NOT_SET;
+      else 
+	 res.mismatch_type := SET;
+      end;
+
+      return res;
+   end;
+
+   -- Returns the error message that happened on the line/col given.
+   -- Copied from str:STR.
+   message : STR is
+
+      sb : STR;
+
+      case ( mismatch_type ) 
+      when CHAR then
+	 sb := "expecting '" + expecting + "', found '" + found_char + "'";
+      when NOT_CHAR then
+	 sb := "expecting anything but '" + expecting + "'; got it anyway";
+      when RANGE then
+	 sb := "expecting token in range: '" + expecting + "'..'" + upper + "', found '" + found_char + "'";
+      when NOT_RANGE then
+	 sb := "expecting token NOT in range: " + expecting + "'..'" + upper + "', found '" + found_char + "'";
+      when SET, NOT_SET then
+
+	 sb := "expecting "; 
+	 if ( mismatch_type = NOT_SET ) then
+	    sb := sb + "NOT "; 
+	 end;
+	 sb := sb + "one of (";
+
+	 loop
+	    sb := sb + " '" + set.elt! + "'";
+	 end;
+	 sb := sb + "), found '" + found_char + "'";
+
+      else
+	 sb := sb + super_message;
+      end;
+      
+      return sb;
+   end;
+
+end;

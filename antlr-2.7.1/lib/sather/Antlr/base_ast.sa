@@ -1,0 +1,308 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/base_ast.sa#1 $
+
+*)
+
+partial class ANTLR_BASE_AST{AST < $ANTLR_AST{AST} } < $ANTLR_AST{AST} , $STR is
+
+   attr down  : AST;
+   attr right : AST;
+
+   attr verbose_string_conversion : BOOL; -- init false
+   attr token_names : ARRAY{STR};
+   
+   -- Add a node to the end of the child list for this node 
+   add_child( node : AST ) is
+      if ( void(node) ) then
+	 return;
+      end;
+      t : AST := first_child;
+      if ( ~void(t) ) then
+	 loop while! ( ~void(t.next_sibling) );
+	    t := t.next_sibling;
+	 end;
+	 t.next_sibling := node;
+      else
+	 first_child := node;
+      end;
+   end;
+   
+   do_work_for_find_all( sibling : AST, v : FLIST{AST}, target : AST, partial_match : BOOL ) is
+
+      -- Start walking sibling lists, looking for matches.
+      loop while!( ~void(sibling) );
+
+	 if ( ( partial_match and sibling.equals_tree_partial( target ) )
+	     or ( ~partial_match and sibling.equals_tree( target ) ) ) then
+	    v := v.push( sibling );
+	 end;
+
+	 -- regardless of match or not, check any children for matches
+	 if ( ~void(sibling.first_child) ) then
+	    do_work_for_find_all( sibling.first_child, v, target, partial_match);
+	 end;
+	 
+	 sibling := sibling.next_sibling;
+      end;
+   end;
+   
+   -- Is node t equal to this in terms of token type and text? 
+   equals( t : AST ) : BOOL is 
+      if ( void(t) ) then
+	 return false;
+      end;
+      return ( text = t.text ) and ( ttype = t.ttype );
+   end;
+   
+   -- Is t an exact structural and equals() match of this tree.  The
+   -- 'this' reference is considered the start of a sibling list.
+   equals_list( t : AST ) : BOOL is
+      sibling : AST;
+
+      -- the empty tree is not a match of any non-void tree.
+      if ( void(t) ) then
+	 return false;
+      end;
+
+      -- Otherwise, start walking sibling lists.  First mismatch, return false.
+      sibling := self;
+      loop while!( ~void(sibling) and ~void(t) );
+
+	 -- as a quick optimization, check roots first.
+	 if ( ~sibling.equals(t) ) then
+	    return false;
+	 end;
+
+	 -- if roots match, do full list match test on children.
+	 if ( ~void(sibling.first_child) ) then
+	    if ( ~sibling.first_child.equals_list( t.first_child ) ) then
+	       return false;
+	    end;
+	 -- sibling has no kids, make sure t doesn't either
+	 elsif ( ~void(t.first_child) ) then
+	    return false;
+	 end;
+	 
+	sibling := sibling.next_sibling;
+	t := t.next_sibling;
+      end;
+
+      if ( void(sibling) and void(t) ) then
+	 return true;
+      end;
+
+      -- one sibling list has more than the other
+      return false;
+
+   end;
+
+   -- Is 'sub' a subtree of this list?
+   -- The siblings of the root are NOT ignored.
+   equals_list_partial( sub : AST ) : BOOL is
+      sibling : AST;
+
+      -- the empty tree is always a subset of any tree.
+      if ( void(sub) ) then
+	 return true;
+      end;
+	
+      -- Otherwise, start walking sibling lists.  First mismatch, return false.
+      sibling := self;
+      loop while! ( ~void(sibling) and ~void(sub) );
+
+	 -- as a quick optimization, check roots first.
+	 if ( ~sibling.equals(sub) ) then
+	    return false;
+	 end;
+
+	 -- if roots match, do partial list match test on children.
+	 if ( ~void(sibling.first_child) ) then
+	    if ( ~sibling.first_child.equals_list_partial( sub.first_child ) ) then
+	       return false;
+	    end;
+	 end;
+	       
+	 sibling := sibling.next_sibling;
+	 sub := sub.next_sibling;
+
+      end;
+      
+      if ( void(sibling) and ~void(sub) ) then
+	 -- nothing left to match in this tree, but subtree has more
+	 return false;
+      end;
+
+      -- either both are void or sibling has more, but subtree doesn't	
+      return true;
+   end;
+
+   -- Is tree rooted at 'this' equal to 't'?  The siblings
+   -- of 'this' are ignored.
+   equals_tree( t : AST ) : BOOL is
+      
+      -- check roots first.
+      if ( ~self.equals(t) ) then
+	 return false;
+      end;
+
+      -- if roots match, do full list match test on children.
+      if ( ~void(first_child) ) then
+	 if ( ~first_child.equals_list(t.first_child) ) then
+	    return false;
+	 end;
+      elsif ( ~void(t.first_child) ) then
+	 -- sibling has no kids, make sure t doesn't either
+	 return false;
+      end;
+      return true;		
+   end;
+
+   -- Is 't' a subtree of the tree rooted at 'this'?  The siblings
+   -- of 'this' are ignored. 
+	
+   equals_tree_partial( sub : AST ) : BOOL is 
+
+      -- the empty tree is always a subset of any tree.
+      if ( void(sub) ) then
+	 return true;
+      end;
+	
+      -- check roots first.
+      if ( ~self.equals(sub) ) then
+	 return false;
+      end;
+
+      -- if roots match, do full list partial match test on children.
+      if ( ~void(first_child) ) then
+	 if ( ~first_child.equals_list_partial(sub.first_child) ) then
+		  return false;
+	 end;
+      end;
+
+      return true;		
+   end;
+
+   -- Walk the tree looking for all exact subtree matches.  Return
+   -- a list of subtree roots found herein.
+   find_all( target : AST ) : ARRAY{AST} is
+      roots : FLIST{AST} := #FLIST{AST}(10);
+
+      -- the empty tree cannot result in an enumeration
+      if ( ~void(target) ) then
+	  -- find all matches recursively
+	 do_work_for_find_all( self, roots, target, false ); 
+      end;
+
+      return roots.array;
+   end;
+
+   -- Walk the tree looking for all subtrees.  Return
+   -- the list of subtree roots found herein.
+
+   find_all_partial( sub : AST ) : ARRAY{AST} is
+      roots : FLIST{AST} := #FLIST{AST}(10);
+
+      -- the empty tree cannot result in an enumeration
+      if ( ~void(sub) ) then
+	 -- find all matches recursively
+	 do_work_for_find_all( self, roots, sub, true );
+      end;
+      
+      return roots.array;
+   end;
+   
+   -- Get the first child of this node; void if not children
+   first_child : AST is
+      return down;
+   end;
+   
+   -- Get the next sibling in line after this one
+   next_sibling : AST is
+      return right;
+   end;
+
+   -- Get the token text for this node
+   stub text : STR;
+   
+   -- Set the token text for this node
+   stub text( text : STR );
+   
+   -- Get the token type for this node
+   stub ttype : INT;
+
+   -- Set the token type for this node
+   stub ttype( typ : INT );
+
+   -- Remove all children
+   remove_children is
+      down := void;
+   end;
+   
+   first_child( c : AST ) is 
+      down := c;
+   end;
+
+   next_sibling( n : AST ) is
+      right := n;
+   end;
+
+   str : STR is
+      b : STR;
+      -- if verbose and type name not AST as text (keyword probably)
+      if ( verbose_string_conversion and
+	  text.upper /= token_names[ttype].upper and
+	  text.upper /= ANTLR_UTIL::strip_front_back( token_names[ttype].upper ,"\"","\"") ) then
+	 
+	 b := "[" + text + ",<" + token_names[ttype] + ">]";
+	 return b;
+      end;
+      return text;
+   end;
+   
+   -- Print out a child-sibling tree in LISP notation
+   str_list : STR is
+      t : AST := self;
+      ts : STR := "";
+
+      if ( ~void(t.first_child) ) then
+	 ts := ts + " (";
+      end;
+
+      ts := ts + " " + str;
+
+      if ( ~void(t.first_child) ) then
+	 ts := ts + t.first_child.str_list + " )";
+      end;
+
+      if ( ~void(t.next_sibling) ) then
+	 ts := ts + t.next_sibling.str_list;
+      end;
+      
+      return ts;
+   end;
+   
+
+   str_tree : STR is 
+      t : AST := self;
+      ts : STR;
+
+      if ( ~void(t.first_child) ) then 
+	 ts := ts + " (";
+      end;
+
+      ts := ts + " " + str;
+
+      if ( ~void(t.first_child) ) then
+	 ts := ts + t.first_child.str_list + " )";
+      end;
+
+      return ts;
+   end;
+
+end;
+

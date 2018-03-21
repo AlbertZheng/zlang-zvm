@@ -1,0 +1,9 @@
+-o main main.sa
+
+../../../lib/sather/Library.module
+
+-has P_LEXER.sa               P_LEXER
+-has P_PARSER_TOKENTYPES.sa   P_PARSER_TOKENTYPES
+-has P_PARSER.sa              P_PARSER                 
+-has main.sa                  M
+-has main.sa                  MAIN

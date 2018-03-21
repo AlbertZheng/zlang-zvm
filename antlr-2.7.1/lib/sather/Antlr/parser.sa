@@ -1,0 +1,220 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/parser.sa#1 $
+
+*)
+
+partial class ANTLR_PARSER{ TOKEN < $ANTLR_TOKEN, AST < $ANTLR_AST{AST} } is
+
+   readonly attr input_state : ANTLR_PARSER_SHARED_INPUT_STATE{TOKEN};
+	
+   -- Table of token type to token names 
+   readonly attr token_names : ARRAY{STR};
+
+   -- AST return value for a rule is squirreled away here 
+   private attr return_ast : AST;
+
+   -- AST support code; parser and treeparser delegate to this object 
+   -- attr ast_factory : $ANTLR_AST_FACTORY;
+
+   attr ignore_invalid_debug_calls : BOOL;
+
+   -- Used to keep track of indentdepth for traceIn/Out
+   readonly attr trace_depth : INT;
+
+   create : SAME is
+      res : SAME := new;
+      res.input_state := #ANTLR_PARSER_SHARED_INPUT_STATE{TOKEN};
+      res.trace_depth := 0;
+      return res;
+   end;
+
+   create ( state : ANTLR_PARSER_SHARED_INPUT_STATE{TOKEN} ) : SAME is
+      res : SAME := new;
+      res.input_state := state;
+      return res;
+   end;
+   
+   -- only_valid_msg : STR := "is only valid if parser built for debugging";
+
+   -- add_message_listener( listener : MESSAGE_LISTENER ) is
+   --   err_msg : STR := "add_message_listener " + only_valid_msg;
+   -- end;
+
+   -- add_parser_listener( listener : PARSER_LISTENER ) is
+   --   err_msg : STR := "add_parser_listener" + only_valid_msg;
+   -- end;
+   
+   -- add_parser_match_listener( listener : PARSER_MATCH_LISTENER ) is
+   --   err_msg : STR := "add_parser_match_listener " + only_valid_msg;
+   -- end;
+   
+   -- add_parse_token_listener( listener : PARSER_TOKEN_LISTENER ) is
+   --   err_msg : STR := "add_parser_token_listener " + only_valid_msg;
+   -- end;
+   
+   -- add_semantic_predicate_listener( listener : SEMANTIC_PREDICATE_LISTENER ) is
+   --   err_msg : STR := "add_semantic_token_listener " + only_valid_msg;
+   -- end;
+   
+   -- add_trace_listener( listener : TRACE_LISTENER ) is
+   --   err_msg : STR := "add_trace_listener " + only_valid_msg;
+   -- end;
+   
+   -- Get another token object from the token stream
+   stub consume;
+
+   -- Consume tokens until one matches the given token
+
+   consume_until( token_type : INT ) is
+      loop while! ( LA(1) /= ANTLR_COMMON_TOKEN::EOF_TYPE and LA(1) /= token_type );
+	 consume;
+      end;
+   end;
+
+   consume_until( set : INT_SET ) is
+      loop while! ( LA(1) /= ANTLR_COMMON_TOKEN::EOF_TYPE and ~set.member( LA(1) ) );
+	 consume;
+      end;
+   end;
+
+   default_debugging_setup( lexer : $ANTLR_TOKEN_STREAM{TOKEN} , 
+			    tok_buf : ANTLR_TOKEN_BUFFER{TOKEN} ) is
+      -- by default, do nothing -- we're not debugging
+   end;
+   
+   ast : AST is
+      return return_ast;
+   end;
+   
+   file_name : STR is
+      return input_state.file_name;
+   end;
+   
+   is_debug_mode : BOOL is 
+      return false;
+   end;
+   
+   -- Return the token type of the ith token of lookahead where i=1
+   -- is the current token being examined by the parser (i.e., it
+   -- has not been matched yet).
+   stub LA( i : INT ) : INT;
+   
+   -- Return the ith token of lookahead
+   stub LT( i : INT ) : TOKEN;
+   
+   -- Forwarded to TokenBuffer
+   mark : INT is
+      return input_state.input.mark;
+   end;
+
+   -- Make sure current lookahead symbol matches token type <tt>t</tt>.
+   -- Throw an exception upon mismatch, which is catch by either the
+   -- error handler or by the syntactic predicate.
+   match( t : INT ) is
+      if ( LA(1) /= t ) then
+	 raise ANTLR_MISMATCHED_TOKEN_EXCEPTION{AST}::create_from_token( token_names, LT(1), t, false, file_name );
+      else
+	 -- mark token as consumed -- fetch next token deferred until LA/LT
+	 consume;
+      end;
+   end;
+
+   -- Make sure current lookahead symbol matches the given set
+   -- Throw an exception upon mismatch, which is catch by either the
+   -- error handler or by the syntactic predicate.
+   match( b : INT_SET ) is
+      if ( ~b.member(LA(1)) ) then
+	 raise ANTLR_MISMATCHED_TOKEN_EXCEPTION{AST}::create_from_token( token_names, LT(1), b, false, file_name );
+      else
+	 -- mark token as consumed -- fetch next token deferred until LA/LT
+	 consume;
+      end;
+   end;
+
+   match_not( t : INT ) is
+      if ( LA(1) = t ) then
+	 -- Throws inverted-sense exception
+	 raise ANTLR_MISMATCHED_TOKEN_EXCEPTION{AST}::create_from_token( token_names, LT(1), t, true, file_name );
+      else
+	 -- mark token as consumed -- fetch next token deferred until LA/LT
+	 consume;
+      end;
+   end;
+
+   panic is
+      #ERR + "Parser: panic\n";
+      UNIX::exit(1);
+   end;
+   
+   -- Parser error-reporting function can be overridden in subclass 
+   report_error( ex : $ANTLR_RECOGNITION_EXCEPTION ) is
+      #ERR + ex.str + "\n";
+   end;
+   
+   -- Parser error-reporting function can be overridden in subclass
+   report_error( s : STR ) is
+      if ( void( file_name ) ) then
+	 #ERR + "error: " + s + "\n";
+      else
+	 #ERR + file_name + ": error: " + s + "\n";
+      end;
+   end;
+   
+   -- Parser warning-reporting function can be overridden in subclass 
+   report_warning( s : STR ) is
+      if ( void( file_name ) ) then
+	 #ERR + "warning: " + s + "\n";
+      else
+	 #ERR + file_name + ": warning: " + s + "\n";
+      end;
+   end;
+
+   rewind ( pos : INT) is
+      input_state.input.rewind(pos);
+   end;
+
+   file_name( f : STR ) is 
+      input_state.file_name := f;
+   end;
+
+   -- Set or change the input token buffer 
+   token_buffer( t : ANTLR_TOKEN_BUFFER{TOKEN} ) is
+      input_state.input := t; 
+   end;
+
+   trace_indent is
+      i : INT := 1;      
+      loop while! ( i < trace_depth );
+	 #OUT + " ";
+	 i := i + 1;
+      end;
+   end;
+
+   trace_in( rname : STR ) is
+      trace_depth := trace_depth + 1;
+      trace_indent;
+      #OUT + "> " + rname + "; LA(1)=" + LT(1).text;
+      if ( input_state.guessing > 0 ) then
+	 #OUT + "[guessing]\n";
+      else
+	 #OUT + "\n";
+      end;
+   end;
+
+   trace_out( rname : STR ) is
+      trace_indent;
+      #OUT + "< "+ rname + "; LA(1)=" + LT(1).text;
+      if ( input_state.guessing > 0 ) then
+	 #OUT + "[guessing]\n";
+      else
+	 #OUT + "\n";
+      end;
+      trace_depth := trace_depth - 1;
+   end;
+
+end;

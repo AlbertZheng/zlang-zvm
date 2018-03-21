@@ -1,0 +1,3 @@
+class INT_SET < $COPY, $ELT{INT} is
+  include FSET{INT} has -> member ;
+end;

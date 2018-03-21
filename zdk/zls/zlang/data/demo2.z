@@ -1,0 +1,283 @@
+#include <standard.zh>
+
+static bool Gz1 = false, Gz2=true;
+byte Gb1=0x00, Gb2='\xFF';
+static sdword Gsdw1=2147483647, Gsdw2=-2147483648;
+udword Gudw1=0, Gudw2=4294967295;
+static sqword Gsqw1=2147483647, Gsqw2=-2147483648;
+uqword Guqw1=0, Guqw2=4294967295;
+double Gdf1 = 0.1, Gdf2 = 0.01;
+static string Gstring1, Gstring2="12345678\x4190ab\nc\td\0efgh\0ijklmnopqrstuvwxyz";
+static pport Gport1={80/tcp}, Gport2={21/udp};
+ipaddress Gip1={192.168.8.90}, Gip2={10.8.8.8};
+
+static table<bool> Gtz1 = { "false" = false, "true" = true};
+table<byte> Gtb1 = { "0x00" = 0 , "0XFF" = 0xff};
+static table<sdword> Gtsdw1 = { "2147483647" = 2147483647, "-2147483648" = -2147483648 };
+table<udword> Gtudw1 = { "4294967295" = 4294967295 };
+table<sqword> Gtsqw1 = { "2147483647" = 2147483647, "-2147483648" = -2147483648 };
+table<uqword> Gtuqw1 = { "4294967295" = 4294967295 };
+table<double> Gtdf1 = { 3.1415926 = 3.1415926 };
+table<string> Gtstring1 = { 128 = "1234567890abcdefghijklmnopqrstuvwxyz",
+                            true = "true",
+                            {10.8.8.8} = "q3ws2" };
+static table<ipaddress> Gtip1 = { "develop" = {10.8.8.8/24} };
+static table<pport> Gtport1 = { "http" = {80/tcp}, "ftp" = {21/udp} };
+
+
+// for testing 'extern'
+
+table<pport> Gtport2;
+table<pport> Gtport3;
+
+
+void TestGlobalVariable()
+{
+  PrintlnBool(Gz1);
+  PrintlnBool(Gz2);
+  PrintlnByte(Gb1);
+  PrintlnByte(Gb2);
+  PrintlnSDWORD(Gsdw1);
+  PrintlnSDWORD(Gsdw2);
+  PrintlnUDWORD(Gudw1);
+  PrintlnUDWORD(Gudw2);
+  PrintlnSQWORD(Gsqw1);
+  PrintlnSQWORD(Gsqw2);
+  PrintlnUQWORD(Guqw1);
+  PrintlnUQWORD(Guqw2);
+  PrintlnDouble(Gdf1);
+  PrintlnDouble(Gdf2);
+  PrintlnString(Gstring1);
+  PrintlnString(Gstring2);
+  PrintlnPPort(Gport1);
+  PrintlnPPort(Gport2);
+  PrintlnIPAddress(Gip1);
+  PrintlnIPAddress(Gip2);
+
+  PrintlnBool(Gtz1["false"]);
+  PrintlnBool(Gtz1["true"]);
+  PrintlnByte(Gtb1["0x00"]);
+  PrintlnByte(Gtb1["0XFF"]);
+  PrintlnSDWORD(Gtsdw1["2147483647"]);
+  PrintlnSDWORD(Gtsdw1["-2147483648"]);
+  PrintlnUDWORD(Gtudw1["4294967295"]);
+  PrintlnSQWORD(Gtsqw1["2147483647"]);
+  PrintlnSQWORD(Gtsqw1["-2147483648"]);
+  PrintlnUQWORD(Gtuqw1["4294967295"]);
+  PrintlnDouble(Gtdf1[3.1415926]);
+  PrintlnString(Gtstring1[128]);
+  PrintlnString(Gtstring1[true]);
+  PrintlnString(Gtstring1[{10.8.8.8}]);
+  PrintlnIPAddress(Gtip1["develop"]);
+  PrintlnPPort(Gtport1["http"]);
+  PrintlnPPort(Gtport1["ftp"]);
+}
+
+void TestOperator()
+{
+  sdword a = 0, b = 1, c = 2, d;
+  bool boolean = false;
+
+  d = a & 0xff;
+  PrintlnSDWORD(d);  // 0
+
+  d = b | 0xff;
+  PrintlnSDWORD(d);  // 255
+
+  d = c ^ 0xff;
+  PrintlnSDWORD(d);  // 253
+
+  d = a == b;
+  PrintlnSDWORD(d);  // 0
+
+  d = a != b;
+  PrintlnSDWORD(d);  // 1
+
+  d = a < b;
+  PrintlnSDWORD(d);  // 1
+
+  d = a <= b;
+  PrintlnSDWORD(d);  // 1
+
+  d = a > b;
+  PrintlnSDWORD(d);  // 0
+
+  d = a >= b;
+  PrintlnSDWORD(d);  // 0
+
+  d = b << 3;
+  PrintlnSDWORD(d);  // 8
+
+  d = b >> 3;
+  PrintlnSDWORD(d);  // 0
+
+  d = b + c;
+  PrintlnSDWORD(d);  // 3
+
+  d = b - c;
+  PrintlnSDWORD(d);  // -1
+
+  d = b * c;
+  PrintlnSDWORD(d);  // 2
+
+  d = b / c;
+  PrintlnSDWORD(d);  // 0
+
+  d = b % c;
+  PrintlnSDWORD(d);  // 1
+
+  d = --c;
+  PrintlnSDWORD(d);  // 1
+
+  d = ++c;
+  PrintlnSDWORD(d);  // 2
+
+  d = c--;
+  PrintlnSDWORD(d);  // 2
+
+  d = c++;
+  PrintlnSDWORD(d);  // 1
+
+  d = +c;
+  PrintlnSDWORD(d);  // 2
+
+  d = -c;
+  PrintlnSDWORD(d);  // -2
+
+  d = ~c;
+  PrintlnSDWORD(d);  // -3
+
+  d = !boolean;
+  PrintlnSDWORD(d);  // 0
+
+  d = (udword)c;
+  PrintlnSDWORD(d);  // 2
+
+  d = 1 | 2 ^ 3 & 4 == 5 != 6 < 7 <= 8 > 9 >= 10 << 11 >> 12 + 13 - 14 * 15 / 16 % 17 ;
+  PrintlnSDWORD(d);  // 3
+
+  if (1 != 1 || 0 == 0)
+  {
+    PrintlnString("ok");  // ok
+    if (1 != 1 && 0 == 0)
+    {
+      PrintlnString("bad");
+    }
+  }
+}
+
+void TestReferenceArgument(string & rs, table<string> & ras,
+                           sdword & rsdw, table<sdword> & rasdw)
+{
+  PrintlnString("Old string value : ");
+  PrintlnString(rs);
+  rs = ">> This is new string value <<";
+
+  PrintlnString("Old element value of string table : ");
+  PrintlnString(ras[1]);
+  PrintlnString(ras[2]);
+  ras[1] = ">> This is new element value <<";
+  ras[2] = ">> This is new element value <<";
+
+  PrintlnString("Old sdword value : ");
+  PrintlnSDWORD(rsdw);
+  rsdw = 0xffffffff;
+
+  PrintlnString("Old element value of sdword table : ");
+  PrintlnSDWORD(rasdw[1]);
+  PrintlnSDWORD(rasdw[2]);
+  rasdw[1] = -128;
+  rasdw[2] = -2147483648;
+}
+
+void TestSpeed()
+{
+  uqword uqwBeginTime;
+  uqword uqwEndTime;
+  sdword sdw;
+  sdword sdw1=2147483647, sdw2=-2147483648;
+  sdword i = 0;
+
+  uqwBeginTime = Time();
+
+  /*
+  while (i < 1000000)
+  {
+    sdw = sdw1 * sdw2;
+    ++i;
+    //i = i + 1;
+  }
+  */
+
+  for (; i < 1000000; ++i)
+  {
+    sdw = sdw1 * sdw2;
+  }
+
+  uqwEndTime = Time();
+
+  PrintString("i = ");
+  PrintlnSDWORD(i);
+
+  /*
+  PrintString("Test speed begin at -> ");
+  PrintlnUQWORD(uqwBeginTime);
+  PrintString("Test speed end at -> ");
+  PrintlnUQWORD(uqwEndTime);
+  PrintString("Test speed total -> ");
+  PrintlnUQWORD(uqwEndTime - uqwBeginTime);
+  */
+}
+
+static ipaddress __func1()
+{
+  return {10.8.8.8};
+}
+
+ipaddress TestTempVariable()
+{
+  sdword sdw1 = 1, sdw2 = 2, sdw3 = 3, sdw4 = 4;
+  string s1 = "s1", s2 = "s2", s3 = "s3";
+  string s4 = ((s1 + s2) + s3) + (s1 + s2) + s3;
+  bool b = __func1() != __func1();
+  string s5, s6;
+
+  PrintlnString(s4);
+  //< "s1s2s3s1s2s3"
+  s4 = "s4";
+
+  s3 = ((s1 + s2) + (s3 + s4)) + ((s1 + s2) + (s3 + s4));
+  PrintlnString(s3);
+  //< "s1s2s3s4s1s2s3s4"
+  s3 = "s3";
+
+  s4 = (s1 + s2) + (s3 + s4);
+  PrintlnString(s4);
+  //< "s1s2s3s4"
+
+  b = __func1() == __func1();
+  PrintlnBool(b);
+
+  b = __func1() != {10.8.8.8};
+  PrintlnBool(b);
+
+  return __func1();
+}
+
+pport TestShortCircuit()
+{
+  sdword sdw1 = 1, sdw2 = 2, sdw3 = 3, sdw4 = 4;
+  bool b1 = (sdw1 + sdw2) && (sdw3 + sdw4);
+  bool b2 = (sdw1 + sdw2) || (sdw3 + sdw4);
+
+  //if ((sdw1 + sdw2) || (sdw3 + sdw4))
+  if ((sdw1 + sdw2) && (sdw3 + sdw4))
+  {
+    return {80/tcp};
+  }
+  else
+  {
+    return {21/udp};
+  }
+}
+

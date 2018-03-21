@@ -1,0 +1,24 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/token.sa#1 $
+
+*)
+
+abstract class $ANTLR_TOKEN is
+
+  column : INT;
+  line   : INT;
+  text   : STR;
+  ttype  : INT;
+  str    : STR;  
+
+  column ( i: INT );
+  line   ( i: INT );
+  text   ( s: STR );
+  ttype  ( i: INT );
+
+end;

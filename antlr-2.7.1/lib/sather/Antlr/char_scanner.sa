@@ -1,0 +1,318 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/char_scanner.sa#1 $
+
+*)
+
+abstract class $ANTLR_FILE_CURSOR is
+   file_name : STR;
+   column : INT;
+   line : INT;
+end;
+
+class ANTLR_CHAR_SCANNER{ TOKEN < $ANTLR_TOKEN } < $ANTLR_FILE_CURSOR is
+
+   readonly attr text : STR;	-- text of current token
+   attr save_consumed_input : BOOL; -- does consume save characters?
+
+   attr guessing : INT;
+   readonly attr case_sensitive : BOOL;
+   readonly attr case_sensitive_literals : BOOL;
+   readonly attr commit_to_path : BOOL;
+   readonly attr sa_return_token : TOKEN;
+
+   -- Used to keep track of indentdepth for traceIn/Out
+   readonly attr trace_depth : INT;
+
+   attr literals : MAP{STR,INT};
+   attr char_set : CHAR_SET;
+   attr input_state : ANTLR_LEXER_SHARED_INPUT_STATE;
+
+   attr EOF_CHAR : CHAR;
+
+   private init : SAME is
+      res : SAME := new;
+
+      res.guessing := 0;
+      res.case_sensitive := true;
+      res.case_sensitive_literals := true;
+      res.commit_to_path := false;
+      res.save_consumed_input := true;
+      res.EOF_CHAR := '\377';
+      res.trace_depth := 0;
+      return res;
+   end;
+
+   create( state : ANTLR_LEXER_SHARED_INPUT_STATE ) : SAME is
+      res : SAME := init;
+      res.input_state := state;
+      return res;
+   end;
+
+   append ( c : CHAR ) is
+      if save_consumed_input
+      then
+	 text := text + c;
+      end;
+   end;
+
+   append ( s : STR ) is
+      if save_consumed_input
+      then
+	 text := text + s;
+      end;
+   end;
+
+   commit is
+      input_state.input.commit;
+   end;
+
+   LA ( i : INT ) : CHAR is
+      if case_sensitive 
+      then
+	 return input_state.input.LA(i);
+      else
+	 return input_state.input.LA(i).lower;
+      end;
+   end;
+
+   consume is
+      if input_state.guessing = 0
+      then
+         c : CHAR := LA(1);
+	 if case_sensitive
+	 then
+	    append( c );
+	 else
+	    append( input_state.input.LA(1) );
+	 end;
+	 if ( c = '\t' ) 
+	 then
+	    tab;
+	 else
+	    input_state.column := input_state.column + 1; 
+	 end;
+      end;
+      input_state.input.consume;
+   end;
+
+   consume_until ( c: CHAR ) is
+      loop while! ( LA(1) /= IFSTREAM::eof_char and LA(1) /= c );
+	 consume;
+      end;
+   end;
+
+   consume_until ( set: CHAR_SET ) 
+      pre ~void(set) is
+      loop while! ( LA(1) /= IFSTREAM::eof_char and 
+		   ~set.member( LA(1) ) );
+	 consume;
+      end;
+   end;
+
+   byte_buffer : ANTLR_BYTE_BUFFER is 
+      return input_state.input;
+   end;
+   
+   make_token ( t : INT ) : TOKEN is
+      res ::= #TOKEN;
+      res.ttype( t );
+      res.column := input_state.token_start_column;
+      res.line   := input_state.token_start_line;
+      return res;
+   end;
+
+   mark : INT is
+      return input_state.input.mark;
+   end;
+
+   match ( c: CHAR ) is
+      if ( LA(1) /= c ) then
+	 raise #ANTLR_MISMATCHED_CHAR_EXCEPTION( LA(1), c, false, self );
+      end;
+      consume;
+   end;
+
+   match ( b : CHAR_SET ) 
+      pre ~void(b) is
+      if ( ~b.member( LA(1) ) ) then
+	 raise #ANTLR_MISMATCHED_CHAR_EXCEPTION( LA(1), b, false, self );
+      else
+         consume;
+      end;
+   end;
+
+   match ( s : STR ) 
+      pre ~void(b) is
+      len : INT := s.length;
+      loop 
+	 si ::= s.elt!;
+	 if ( LA(1) /= si ) then
+	    raise #ANTLR_MISMATCHED_CHAR_EXCEPTION( LA(1), si, false, self );
+	 end;
+	 consume;
+      end;
+   end;
+
+   match_not ( c : CHAR ) is
+      if ( LA(1) = c ) then
+	 raise #ANTLR_MISMATCHED_CHAR_EXCEPTION( LA(1), c, true, self );
+      end;      
+      consume;
+   end;
+
+   match_range ( c1 : CHAR, c2 : CHAR ) is
+      if ( LA(1) < c1 or LA(1) > c2 ) then
+	 raise #ANTLR_MISMATCHED_CHAR_EXCEPTION( LA(1), c1, c2, false, self );
+      end;
+      consume;
+   end;
+
+   newline is
+      input_state.line := input_state.line + 1;
+      input_state.column := 1;
+   end;
+
+   -- advance the current column number by an appropriate amount.
+   -- If you do not override this to specify how much to jump for
+   -- a tab, then tabs are counted as one char.  This method is
+   -- called from consume.
+
+   tab is
+      -- update input_state.column as function of
+      -- input_state.column and tab stops.
+      -- For example, if tab stops are columns 1 and 5 etc...
+      -- and column is 3, then add 2 to column.
+      input_state.column := input_state.column + 1;
+   end;
+
+   panic is
+      #ERR + "ANTLR_CHAR_SCANNER: panic";
+      UNIX::exit(1);
+   end;
+
+   panic ( s: STR ) is
+      #ERR + "ANTLR_CHAR_SCANNER: panic" + s;
+      UNIX::exit(1);
+   end;
+
+   report_error ( e : $ANTLR_RECOGNITION_EXCEPTION ) 
+      pre ~void(e) is 
+      #ERR + e.str + '\n';
+   end;
+
+   report_error ( s : STR ) is 
+      if ( void(file_name) ) then
+	 #ERR + "error: " + s + '\n';
+      else
+	 #ERR + file_name + ": error: " + s + '\n';
+      end;
+   end;
+
+   report_warning ( s: STR ) is
+      if ( void(file_name) ) then
+	 #ERR + "warning: " + s + '\n';
+      else
+	 #ERR + file_name + ": warning: " + s + '\n';
+      end;
+   end;
+
+   reset_text is
+      text := "";
+      input_state.token_start_column := input_state.column;
+      input_state.token_start_line   := input_state.line;
+   end;
+
+   rewind ( pos : INT ) 
+      pre ~void(input) is
+      input_state.input.rewind( pos );
+   end;  
+
+   test_literals_table ( ttype : INT ) : INT is 
+      if ( literals.has_ind( text ) ) then
+	 -- would be nice if we could test membership of text and get its associated
+	 -- value with one call a la C++/STL's map
+	 return literals[ text ]; 
+      end;
+      return ttype;
+   end;
+
+   -- Test the text passed in against the literals table
+   -- Override this method to perform a different literals test
+   -- This is used primarily when you want to test a portion of
+   -- a token.
+   test_literals_table( txt : STR, ttype : INT ) : INT is
+      if ( literals.has_ind( txt ) ) then
+	 return literals[ txt ]; 
+      end;
+      return ttype;
+   end;
+   
+   trace_indent is
+      i : INT := 1;      
+      loop while! ( i < trace_depth );
+	 #OUT + " ";
+	 i := i + 1;
+      end;
+   end;
+
+   trace_in ( rname : STR ) is 
+      trace_depth := trace_depth + 1;
+      trace_indent;
+      #OUT + "> lexer " + rname + "; c==" + LA(1) + '\n';
+   end;
+
+   trace_out ( rname : STR ) is 
+      trace_indent;
+      #OUT + "< lexer " + rname + "; c==" + LA(1) + '\n';
+      trace_depth := trace_depth - 1;
+   end;
+   
+   line : INT is
+      return input_state.line;
+   end;
+
+   column : INT is
+      return input_state.column;
+   end;
+   
+   column( c : INT ) is
+      input_state.column := c; 
+   end;
+
+   file_name : STR is
+      return input_state.file_name;
+   end;
+   
+   file_name( name : STR ) is
+      input_state.file_name := name;
+   end;
+
+   token : TOKEN is
+      return sa_return_token;
+   end;
+
+   -- This method is called by YourLexer.nextToken() when the lexer has
+   -- hit EOF condition.  EOF is NOT a character.
+   -- This method is not called if EOF is reached during
+   -- syntactic predicate evaluation or during evaluation
+   -- of normal lexical rules, which presumably would be
+   -- an IOException.  This traps the "normal" EOF condition.
+   --
+   -- upon_eof is called after the complete evaluation of
+   -- the previous token and only if your parser asks
+   -- for another token beyond that last non-EOF token.
+   --
+   -- You might want to throw token or char stream exceptions
+   -- like: "Heh, premature eof" or a retry stream exception
+   -- ("I found the end of this file, go back to referencing file").
+   --
+	 
+   upon_eof is
+   end;
+   
+end;

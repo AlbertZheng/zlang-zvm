@@ -1,0 +1,40 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/token_stream_basic_filter.sa#1 $
+
+*)
+
+class ANTLR_TOKEN_STREAM_BASIC_FILTER{ TOKEN < $ANTLR_TOKEN } < $ANTLR_TOKEN_STREAM{ TOKEN } is
+   
+   -- the set of token types to discard
+   attr discard_set : INT_SET;
+
+   -- the input stream
+   private attr input : $ANTLR_TOKEN_STREAM{TOKEN};
+   
+   discard_type( ttype : INT ) is
+      discard_set := discard_set.insert( ttype );
+   end;
+   
+   create( input : $ANTLR_TOKEN_STREAM{TOKEN} ) : SAME is
+      res : SAME := new;
+      res.input := input;
+      res.discard_set := #INT_SET;
+      return res;
+   end;
+
+   next_token : TOKEN is
+
+      tok : TOKEN := input.next_token;
+      loop while!( ~void(tok) and discard_set.member( tok.ttype ) );
+	 tok := input.next_token;
+      end;
+      return tok;
+
+   end;
+   
+end;

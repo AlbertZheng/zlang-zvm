@@ -1,0 +1,44 @@
+class MAIN is
+
+   -- Define a selector that can switch from java to javadoc; make visible to lexers
+   shared selector : ANTLR_TOKEN_STREAM_SELECTOR{ANTLR_COMMON_TOKEN} := 
+	 ANTLR_TOKEN_STREAM_SELECTOR{ANTLR_COMMON_TOKEN}::create;
+
+   main ( args : ARRAY{STR} ) is
+
+      if ( args.size < 2 ) then
+	 #OUT + "usage " + args[0] + " <filename>\n";
+	 return;
+      end;
+	 
+      f : IFSTREAM := IFSTREAM::open_for_read( args[1] );
+
+      if ( void(f) ) then
+	 #OUT + "file \"" + args[1] + "\" not found\n";
+	 return;
+      end;
+
+      protect 
+	 -- attach java lexer to the input stream, which also creates a shared input state object
+	 java_lexer ::= #DEMO_JAVA_LEXER{ANTLR_COMMON_TOKEN}( f );
+
+	 -- create javadoc lexer; attach to same shared input state as java lexer
+	 javadoc_lexer ::= #DEMO_JAVADOC_LEXER{ANTLR_COMMON_TOKEN}( java_lexer.input_state );
+
+	 -- notify selector about various lexers; name them for convenient reference later
+	 selector.add_input_stream( java_lexer, "java");
+	 selector.add_input_stream( javadoc_lexer, "javadoc");
+
+	 selector.select("java"); -- start with main java lexer
+
+	 -- Create parser attached to selector
+	 parser ::= #DEMO_JAVA_PARSER{ANTLR_COMMON_TOKEN,ANTLR_COMMON_AST}(selector);
+
+	 -- Pull in one or more int decls with optional javadoc
+	 parser.input;
+
+      when $STR then
+	 #ERR + "exception: " + exception.str + "\n";
+      end;
+   end;
+end;

@@ -1,0 +1,4 @@
+abstract class $ISTREAM is
+  get : CHAR;
+  eof_char: CHAR;
+end;

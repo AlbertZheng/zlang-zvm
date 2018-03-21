@@ -1,0 +1,21 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/tree_parser_shared_input_state.sa#1 $
+
+*)
+
+class ANTLR_TREE_PARSER_SHARED_INPUT_STATE is
+   -- are we guessing?
+   attr guessing : INT;
+   
+   create : SAME is
+      res : SAME := new;
+      res.guessing := 0;
+      return res;
+   end;
+
+end;

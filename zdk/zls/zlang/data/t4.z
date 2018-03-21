@@ -1,0 +1,26 @@
+void gf1()
+{
+}
+
+udword gf2(ipaddress ip)
+{
+  string s = "\x0";
+  table<string> astring = { -7301 = "zls\0zls",  0x7401 = "zlj" };
+  udword udw = 100;
+  gf1();
+  while (udw)
+  {
+    if (udw > 10)
+    {
+      udw = udw + 100;
+      break;
+    }
+    else
+    {
+      udw = gf2(ip);
+      continue;
+    }
+  }
+  return(udw);
+}
+

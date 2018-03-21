@@ -1,0 +1,7 @@
+-o main TINYC_PARSER.sa
+
+../../../lib/sather/Library.module
+
+-has TINYC_LEXER.sa               TINYC_LEXER
+-has TINYC_PARSER_TOKENTYPES.sa   TINYC_PARSER_TOKENTYPES
+-has TINYC_TOKENTYPES.sa          TINYC_TOKENTYPES

@@ -1,0 +1,893 @@
+<html>
+
+<head>
+<title>ANTLR Specification: Run-time</title>
+</head>
+
+<body BGCOLOR="#FFFFFF" TEXT="#000000">
+
+<table>
+  <tr valign="top">
+    <td align="center" valign="top" width="120" height="27666">&nbsp;<p><a
+    href="http://www.jguru.com"><img src="j-guru-blue.jpg" width="70" height="80"
+    alt="j-guru-blue.jpg (8086 bytes)" border="0"></a></p>
+    <p><a href="http://www.antlr.org" style="color: rgb(255,255,255)"><font face="Arial"
+    color="#000000"><small><strong>ANTLR</strong></small></font></a></p>
+    <p><a href="http://www.jguru.com"><small><font face="Arial" color="#000000"><strong>jGuru</strong></font></small></a></td>
+    <td width="500" height="27666"><h1><a name="_bb1">Sather Runtime Model</a></h1>
+    <hr>
+    <h2><a name="_bb2">Programmer's Interface</a></h2>
+    <p>In this section, we describe what ANTLR generates after reading your grammar file and
+    how to use that output to parse input. The classes from which your lexer, token, and
+    parser classes are derived are provided as well. </p>
+    <h3><a name="_bb3">What ANTLR generates</a></h3>
+    <p>ANTLR generates the following types of files, where <i>MY_PARSER</i>, <i>MY_LEXER</i>,
+    and <i>MY_TREE_PARSER</i> are names of grammar classes specified in the grammar file. You
+    may have an arbitrary number of parsers, lexers, and tree-parsers per grammar file; a
+    separate class file will be generated for each. In addition, token type files will be
+    generated containing the token vocabularies used in the parsers and lexers. One or more
+    token vocabularies may be defined in a grammar file, and shared between different
+    grammars. For example, given the grammar file: </p>
+<tt><pre>options {
+  language="Sather";
+}
+
+class MyParser extends Parser;
+options {
+  exportVocab=MY;
+}
+... rules ...
+
+class MY_LEXER extends Lexer;
+options {
+  exportVocab=MY;
+}
+... rules ...
+
+class MY_TREE_PARSER extends TreeParser;
+options {
+  exportVocab=MY;
+}
+... rules ...</pre></tt>
+    <p>The following files will be generated: <ul>
+      <li><tt><i>MY_PARSER</i>.sa</tt>. The parser with member methods for the parser rules. </li>
+      <li><tt><i>MY_LEXER</i>.sa</tt>. The lexer with the member methods for the lexical rules. </li>
+      <li><tt><i>MY_TREE_PARSER</i>.sa</tt>. The tree-parser with the member methods for the
+        tree-parser rules. </li>
+      <li><tt><i>MY_TOKENTYPES</i>.sa</tt>. An interface containing all of the token types
+        defined by your parsers and lexers using the exported vocabulary named <tt>MY</tt>.</li>
+      <li><tt><i>MY_TokenTypes</i>.txt</tt>. A text file containing all of the token types,
+        literals, and paraphrases defined by parsers and lexers contributing vocabulary <tt>MY</tt>.</li>
+    </ul>
+    <p>The programmer uses the classes by referring to them: <ol>
+      <li>Create a lexical analyzer. </li>
+      <li>Create a parser and attach it to the lexer (or another $ANTLR_TOKEN_STREAM). </li>
+      <li>Call one of the methods in the parser to begin parsing.</li>
+    </ol>
+    <p>If your parser generates an AST, then get the AST value, create a tree-parser, and
+    invoke one of the tree-parser rules using the AST. </p>
+    <tt><pre>lex ::= #MY_LEXER{ANTLR_COMMON_TOKEN}( file_stream );
+parser ::= MY_PARSER{ANTLR_COMMON_TOKEN,ANTLR_COMMON_AST}( lex, <i>user-defined-args-if-any</i> );
+parser.<i>start-rule</i>;
+-- and, if you are tree parsing the result...
+tree_parser ::= #MY_TREE_PARSER{ANTLR_COMMON_AST};
+tree_parser.<i>start-rule</i>( parser.ast );</tt></pre>
+    <p>The lexer and parser can cause exceptions of type $ANTLR_RECOGNITION_EXCEPTIONS, which you may
+    catch:</p>
+    <pre>
+  lexer ::= #CALC_LEXER{ANTLR_COMMON_TOKEN}( file_stream );
+  parser ::= #CALC_PARSER{ANTLR_COMMON_TOKEN,ANTLR_COMMON_AST}(lexer);
+  -- Parse the input expression
+  protect 
+    parser.expr;
+  when $ANTLR_RECOGNITION_EXCEPTION
+    #ERR + exception.str + &quot;\n&quot;;
+  end;</pre>
+
+    <h3><a name="sharingstate">Multiple Lexers/Parsers With Shared Input State</a></h3>
+    <p>Occasionally, you will want two parsers or two lexers to share input state; that is,
+    you will want them to pull input from the same source token stream or character stream.
+    &nbsp; </P>
+    <p>ANTLR 2.6.0 factored the input variables such as line number, guessing state, input
+    stream, etc... into a separate object so that another lexer or parser could same that
+    state.&nbsp; The <CODE>ANTLR_LEXER_SHARED_INPUT_STATE</CODE> and <CODE>ANTLR_PARSER_SHARED_INPUT_STATE</CODE> embody this factoring. &nbsp;
+    Attribute <CODE>input_state</CODE> can be used on
+    either <CODE>ANTLR_CHAR_SCANNER</CODE> or <CODE>ANTLR_PARSER</CODE> objects.&nbsp; Here is how to construct two
+    lexers sharing the same input stream:</p>
+    <pre>-- create a Java lexer
+main_lexer ::= #JAVA_LEXER{ANTLR_COMMON_TOKEN}( input );
+-- create javadoc lexer
+-- attach to shared input state of java lexer
+doclexer ::= #JAVADOC_LEXER{ANTLR_COMMON_TOKEN}( main_lexer.input_state );</pre>
+    <p>Parsers with shared input state can be created similarly:</p>
+    <pre>jdocparser ::=  #JAVA_DOC_PARSER{ANTLR_COMMON_TOKEN,ANTLR_COMMON_AST}( input_state );
+jdocparser.content; -- go parse the comment</pre>
+    <p>Sharing state is easy, but what happens upon exception during the execution of the
+    &quot;subparser&quot;?&nbsp; What about syntactic predicate execution?&nbsp; It turns out
+    that invoking a subparser with the same input state is exactly the same as calling another
+    rule in the same parser as far as error handling and syntactic predicate guessing are
+    concerned.&nbsp; If the parser is guessing before the call to the subparser, the subparser
+    must continue guessing, right?&nbsp; Exceptions thrown inside the subparser must exit the
+    subparser and return to enclosing erro handler or syntactic predicate handler.</p>
+    <h2><a name="_bb4">Parser Implementation</a></h2>
+    <h3><a name="_bb5">Parser Class</a></h3>
+    <p>ANTLR generates a parser class (an extension of <tt>ANTLR_LLKPARSER</tt>) that contains a
+    method for every rule in your grammar. The general format looks like: </p><tt>
+    <pre>
+class MY_PARSER{ TOKEN < $ANTLR_TOKEN, AST < $ANTLR_AST{AST} } is
+
+  include ANTLR_LLKPARSER{ TOKEN, AST } create -> super_create;
+  include CALC_PARSER_TOKENTYPES;
+
+  create ( token_buf : ANTLR_TOKEN_BUFFER{TOKEN} , k : INT ) : SAME is
+    res : SAME := super_create( token_buf, k );
+    res.token_names := sa_token_names;
+    return res;
+  end;
+
+  create ( token_buf : ANTLR_TOKEN_BUFFER{TOKEN} ) : SAME is
+    return #SAME( token_buf, 1);
+  end;
+
+  create ( lexer : $ANTLR_TOKEN_STREAM{TOKEN} , k : INT ) : SAME is
+    res : SAME := super_create( lexer, k );
+    res.token_names := sa_token_names;
+    return res;
+  end;
+
+  create( lexer : $ANTLR_TOKEN_STREAM{TOKEN} ) : SAME is
+    res : SAME := #SAME( lexer, 1);
+    return res;
+  end;
+
+  create ( state : ANTLR_PARSER_SHARED_INPUT_STATE{TOKEN} ) : SAME is 
+    res : SAME := super_create( state,1);
+    res.token_names := sa_token_names;
+    return res;
+  end;
+  ...
+  -- add your own constructors here...
+  <i>rule-definitions</i>
+end;
+</pre></tt>
+    <h3><a name="_bb6">Parser Methods</a></h3>
+    <p>ANTLR generates recursive-descent parsers, therefore, every rule in the grammar will
+    result in a method that applies the specified grammatical structure to the input token
+    stream. The general form of a parser method looks like: </p><tt>
+    <pre>
+rule is
+  <i>init-action-if-present</i>
+  if ( <i>lookahead-predicts-production-1</i> ) then
+     <i>code-to-match-production-1</i>
+  elsif ( <i>lookahead-predicts-production-2</i> ) then
+     <i>code-to-match-production-2</i>
+  ...
+  elsif ( <i>lookahead-predicts-production-n</i> ) then
+     <i>code-to-match-production-n</i>
+  else 
+    -- syntax error
+    raise #ANTLR_NO_VIABLE_ALT_EXCEPTION(LT(1));
+  end;
+end;</PRE>
+</tt>  This code results from a rule of the form:  <tt></pre>
+    <pre>
+rule:   <i>production-1</i>
+    |   <i>production-2</i>
+   ...
+    |   <i>production-n</i>
+    ;
+</pre></tt>
+    <p>If you have specified arguments and a return type for the rule, the method header
+    changes to: </p><tt>
+    <pre>
+(* generated from:
+ *    rule(<i>user-defined-args</i>)
+ *      returns <i>return-type</i> : ... ;
+ *)
+rule( <i>user-defined-args</i> ) : <i>return-type</i> is
+  ...
+end;
+</pre></tt>
+    <p>Token types are integers and we make heavy use of sets and range comparisons to
+    avoid excessively-long test expressions. </p>
+    <h3><a name="_bb7">EBNF Subrules</a></h3>
+    <p>Subrules are like unlabeled rules, consequently, the code generated for an EBNF subrule
+    mirrors that generated for a rule. The only difference is induced by the EBNF subrule
+    operators that imply optionality or looping. </p>
+    <p><b><tt>(...)?</tt> optional subrule</b>. The only difference between the code generated
+    for an optional subrule and a rule is that there is no default <tt>else</tt>-clause to
+    throw an exception--the recognition continues on having ignored the optional subrule. </p><tt>
+    <pre>
+  <i>init-action-if-present</i>
+  if ( <i>lookahead-predicts-production-1</i> ) then
+     <i>code-to-match-production-1</i>
+
+  elsif ( <i>lookahead-predicts-production-2</i> ) then
+     <i>code-to-match-production-2</i>
+
+  ...
+  elsif ( <i>lookahead-predicts-production-n</i> ) then
+     <i>code-to-match-production-n</i>
+  end;
+</pre></tt>
+    <p>Not testing the optional paths of optional blocks has the potential to delay the
+    detection of syntax errors. </p>
+    <p><b><tt>(...)*</tt> closure subrule</b>. A closure subrule is like an optional looping
+    subrule, therefore, we wrap the code for a simple subrule in a &quot;forever&quot; loop
+    that exits whenever the lookahead is not consistent with any of the alternative
+    productions. </p><tt>
+    <pre>
+  <i>init-action-if-present</i>
+  loop
+    if ( <i>lookahead-predicts-production-1</i> ) then
+       <i>code-to-match-production-1</i>
+
+    elsif ( <i>lookahead-predicts-production-2</i> ) then
+       <i>code-to-match-production-2</i>
+
+    ...
+    elsif ( <i>lookahead-predicts-production-n</i> ) then
+       <i>code-to-match-production-n</i>
+
+    else 
+      break!;
+
+    end;
+  end;
+</pre></tt>
+    <p>While there is no need to explicity test the lookahead for consistency with the exit
+    path, the grammar analysis phase computes the lookahead of what follows the block. The
+    lookahead of what follows much be disjoint from the lookahead of each alternative
+    otherwise the loop will not know when to terminate. For example, consider the following
+    subrule that is nondeterministic upon token <tt>A</tt>. </p><tt>
+    <pre>
+( A | B )* A
+</pre></tt>
+    <p>Upon <tt>A</tt>, should the loop continue or exit? One must also ask if the loop should
+    even begin. Because you cannot answer these questions with only one symbol of lookahead,
+    the decision is non-LL(1). </p>
+    <p>Not testing the exit paths of closure loops has the potential to delay the detection of
+    syntax errors. </p>
+    <p>As a special case, a closure subrule with one alternative production results in: </p>
+<tt><pre>
+  <i>init-action-if-present</i>
+  loop while!( <i>lookahead-predicts-production-1</i> );
+    <i>code-to-match-production-1</i>
+  end;
+ </pre></tt>
+    <p>This special case results in smaller, faster, and more readable code. </p>
+    <p><b><tt>(...)+</tt> positive closure subrule</b>. A positive closure subrule is a loop
+    around a series of production prediction tests like a closure subrule. However, we must
+    guarantee that at least one iteration of the loop is done before proceeding to the
+    construct beyond the subrule. </p>
+    <tt><pre>
+  sa_cnt : INT := 0;
+  <i>init-action-if-present</i>
+  loop
+    if ( <i>lookahead-predicts-production-1</i> ) then
+       <i>code-to-match-production-1</i>
+
+    elsif ( <i>lookahead-predicts-production-2</i> ) then
+       <i>code-to-match-production-2</i>
+
+    ...
+    elsif ( <i>lookahead-predicts-production-n</i> ) then
+       <i>code-to-match-production-n</i>
+
+    elsif ( sa_cnt&gt;1 ) then
+      -- lookahead predicted nothing and we've
+      -- done an iteration
+      break!;
+
+    else 
+      raise #ANTLR_NO_VIABLE_ALT_EXCEPTION(LT(1));
+
+    end;
+    sa_cnt := sa_cnt + 1;  -- track times through the loop
+
+  end;
+</pre></tt>
+    <p>While there is no need to explicity test the lookahead for consistency with the exit
+    path, the grammar analysis phase computes the lookahead of what follows the block. The
+    lookahead of what follows much be disjoint from the lookahead of each alternative
+    otherwise the loop will not know when to terminate. For example, consider the following
+    subrule that is nondeterministic upon token <tt>A</tt>. </p><tt>
+    <pre>
+( A | B )+ A
+</pre></tt>
+    <p>Upon <tt>A</tt>, should the loop continue or exit? Because you cannot answer this with
+    only one symbol of lookahead, the decision is non-LL(1). </p>
+    <p>Not testing the exit paths of closure loops has the potential to delay the detection of
+    syntax errors. </p>
+    <p>You might ask why we do not have a <tt>while</tt> loop that tests to see if the
+    lookahead is consistent with any of the alternatives (rather than having series of tests
+    inside the loop with a <tt>break</tt>). It turns out that we can generate smaller code for
+    a series of tests than one big one. Moreover, the individual tests must be done anyway to
+    distinguish between alternatives so a <tt>while</tt> condition would be redundant. </p>
+    <p>As a special case, if there is only one alternative, the following is generated: </p><tt>
+    <pre>
+  <i>init-action-if-present</i>
+  loop
+    <i>code-to-match-production-1</i>
+    if ( <i>lookahead-predicts-production-1</i> ) then
+      break!;
+    end;
+  end;
+</pre></tt>
+    <p><b>Optimization.</b> When there are a large (where large is user-definable) number of
+    strictly LL(1) prediction alternatives, then a <tt>case</tt>-statement can be used
+    rather than a sequence of <tt>if</tt>-statements. The non-LL(1) cases are handled by
+    generating the usual <tt>if</tt>-statements in the <tt>else</tt> case. For example: </p><tt>
+    <pre>
+case ( LA(1) ) 
+  when KEY_WHILE, KEY_IF, KEY_DO then
+    statement;
+  when KEY_INT, KEY_FLOAT then
+    declaration;
+  else 
+    -- do whatever else-clause is appropriate
+end;
+</pre></tt>
+    <p>This optimization relies on the compiler building a more direct jump (via jump table or
+    hash table) to the ith production matching code. This is also more readable and faster
+    than a series of set membership tests. </p>
+    <h3><a name="_bb8">Production Prediction</a> </h3>
+    <p><b>LL(1) prediction.</b> Any LL(1) prediction test is a simple set membership test. If
+    the set is a singleton set (a set with only one element), then an integer token type <tt>=</tt>
+    comparison is done. If the set degree is greater than one, a set is created and the
+    single input token type is tested for membership against that set. For example, consider
+    the following rule: </p><tt>
+    <pre>
+a : A | b ;
+b : B | C | D | E | F;
+</pre></tt>
+    <p>The lookahead that predicts production one is {<tt>A</tt>} and the lookahead that
+    predicts production two is {<tt>B,C,D,E,F</tt>}. The following code would be generated by
+    ANTLR for rule <tt>a</tt> (slightly cleaned up for clarity): </p>
+    <tt><pre>
+a is 
+  if ( LA(1) = A ) then
+    match(A);
+
+  elsif ( token_set1.member(LA(1)) ) then
+    b;
+
+  end;
+
+end;
+</pre></tt>
+    <p>The prediction for the first production can be done with a simple integer comparison,
+    but the second alternative uses a set membership test for speed, which you probably
+    didn't recognize as testing <tt>LA(1) member {B,C,D,E,F}</tt>. The complexity threshold
+    above which set-tests are generated is user-definable. We use arrays of <tt>BOOL</tt>s to hold sets. 
+    The various sets needed by ANTLR are created and initialized in the generated
+    parser (or lexer) class. </p>
+    <p><b>Approximate LL(k) prediction.</b> An extension of LL(1)...basically we do a series
+    of up to k set tests rather than a single as we do in LL(1) prediction. Each decision
+    will use a different amount of lookahead, with LL(1) being the dominant decision type. </p>
+    <h3><a name="_bb9"></a><a name="Production Element Recognition">Production Element
+    Recognition</a> </h3>
+    <p><b>Token references.</b> Token references are translated to: </p><tt>
+    <pre>
+match(<i>token-type</i>);
+</pre></tt>
+    <p>For example, a reference to token <tt>KEY_BEGIN</tt> results in: </p><tt>
+    <pre>
+match(KEY_BEGIN);
+</pre></tt>
+    <p>where <tt>KEY_BEGIN</tt> will be an integer constant defined in the <tt><i>MY_PARSER</i>_TOKENTYPES</tt>
+    class generated by ANTLR. </p>
+    <p><b>String literal references.</b> String literal references are references to
+    automatically generated tokens to which ANTLR automatically assigns a token type (one for
+    each unique string). String references are translated to: </p>
+    <tt><pre>
+match(<i>T</i>);
+</pre></tt>
+    <p>where <tt><i>T</i></tt> is the token type assigned by ANTLR to that token. </p>
+    <p><b>Character literal references.</b> Referencing a character literal implies that the
+    current rule is a lexical rule. Single characters, '<i>t</i>', are translated to: </p>
+    <tt><pre>
+match('<i>t</i>');</pre></tt>
+    <p>which can be manually inlined with: </p><tt>
+    <pre>
+  if ( c = '<i>t</i>' ) then 
+    consume;
+  else 
+    raise #ANTLR_NO_VIABLE_ALT_FOR_CHAR_EXCEPTION( LA(1), file_name, line );
+  end;</pre></tt>
+    <p>if the method call proves slow (at the cost of space). </p>
+    <p><b>Wildcard references.</b> In lexical rules, the wildcard is translated to: </p><tt>
+    <pre>
+  consume;</pre></tt>
+    <p>which simply gets the next character of input without doing a test. </p>
+    <p>References to the wildcard in a parser rule results in the same thing except that the <tt>consume</tt>
+    call will be with respect to the parser. </p>
+    <p><b>Not operator.</b> When operating on a token, <tt>~<i>T</i></tt> is translated to: </p>
+<tt><pre>match_not( <i>T</i> );
+</pre></tt> 
+    <p>When operating on a character literal, <tt>'<i>t</i>'</tt> is translated to: </p>
+<tt><pre>match_Not( '<i>t</i>' );
+</pre></tt>
+    <p><b>Range operator.</b> In parser rules, the range operator (<tt><i>T1</i>..<i>T2</i></tt>)
+    is translated to: </p>
+<tt><pre>match_range( <i>T1</i>, <i>T2</i> );
+</pre></tt>
+    <p>In a lexical rule, the range operator for characters <tt><i>c1..c2</i></tt> is
+    translated to: </p>
+<tt><pre>match_range( <i>c1</i>, <i>c2</i> );
+</pre></tt>
+    <p><b>Labels.</b> Element labels on atom references become <tt>TOKENS</tt> references in
+    parser rules and <tt>INT</tt>s in lexical rules. For example, the parser rule: </p>
+<tt><pre>
+a : id:ID { OUT::create + &quot;id is &quot; + id + '\n'; }
+  ;
+</PRE></tt>  would be translated to:  
+<tt><pre>
+a is
+  id : TOKEN := void;
+  id := LT(1);
+  match(ID);
+  OUT::create + &quot;id is &quot; + id + '\n';
+end;
+</pre></tt>  For lexical rules such as:  
+<tt><pre>
+ID : w:. { OUT::create + &quot;w is &quot;+ w + '\n'; }
+   ;
+</PRE></tt>  the following code would result:
+<tt><pre>
+ID is
+  w : CHAR;
+  w := c;
+  consume; -- match wildcard (anything)
+  OUT::create + &quot;w is &quot;+ w + '\n';
+end;
+</pre></tt>  
+    <p>Labels on rule references result in <tt>AST</tt> references, when generating trees, of
+    the form <tt><i>label</i>_ast</tt>. </p>
+    <p><b>Rule references.</b> Rule references become method calls. Arguments to rules become
+    arguments to the invoked methods. Return values are assigned like Sather assignments.
+    Consider rule reference <tt>i=list[1]</tt> to rule: </p><tt>
+    <pre>
+list[scope:INT] returns INT
+    :   { return scope+3; }
+    ;
+</PRE></tt>
+The rule reference would be translated to:  
+<TT><pre>
+i := list(1);
+</tt></pre>
+    <p><b>Semantic actions.</b> Actions are translated verbatim to the output parser or lexer
+    except for the <a href="trees.html#Action Translation">translations required for AST
+    generation</a>. </p>
+    <p>To add members to a lexer or parser class definition, add the class member definitions
+    enclosed in {} immediately following the class specification, for example: </p>
+<TT><pre>
+class MY_PARSER extends Parser;
+{
+   private i : INT;
+   create ( lexer : ANTLR_TOKEN_STREAM{TOKEN}, aUsefulArgument : INT ) : SAME is
+      i := aUsefulArgument;
+   end;
+}
+... rules ...
+</PRE></tt>
+    <p>ANTLR collects everything inside the {...} and inserts it in the class definition
+    before the rule-method definitions.</p>
+    <p><b>Semantic predicates.</b> </p>
+
+    <h2><a name="_bb11">Lexer Implementation</a></h2>
+    <h3><a name="_bb12">Lexer Form</a></h3>
+    <p>The lexers produced by ANTLR 2.x are a lot like the parsers produced by ANTLR 2.x. They
+    only major differences are that (a) scanners use characters instead of tokens, and (b)
+    ANTLR generates a special <tt>next_token</tt> rule for each scanner which is a production
+    containing each public lexer rule as an alternate. The name of the lexical grammar class
+    provided by the programmer results in a subclass of <tt>ANTLR_CHARS_CANNER</tt>, for example </p>
+<TT><pre>
+class MY_LEXER{TOKEN} < $ANTLR_TOKEN_STREAM{TOKEN} , $ANTLR_FILE_CURSOR is
+
+  include ANTLR_CHAR_SCANNER{TOKEN} create -> private char_scanner_create;
+  include CALC_PARSER_TOKENTYPES;
+
+  create ( istr : $ISTREAM ) : SAME is
+    ...
+  end;
+
+  create ( bb : ANTLR_BYTE_BUFFER ) : SAME is
+    ...
+  end;
+
+  create ( state : ANTLR_LEXER_SHARED_INPUT_STATE ) : SAME is 
+    ...
+  end;
+
+  next_token : TOKEN is
+     <i>scanning logic</i>
+    ...
+  end;
+  <i>recursive and other non-inlined lexical methods</i>
+  ...
+
+end;
+</pre></tt>
+    <p>When an ANTLR-generated parser needs another token from its lexer, it calls a method
+    called <tt>next_token</tt>. The general form of the <tt>next_token</tt> method is: </p>
+<TT><pre>
+next_token : TOKEN is
+  ss_ttype : INT;
+  loop
+     protect 
+        reset_text;
+        case ( LA(1) ) 
+        <i>case for each char predicting lexical rule</i>
+           <i>call lexical rule gets token type -&gt;</i> sa_ttype
+        else 
+           raise #ANTLR_NO_VIABLE_ALT_FOR_CHAR_EXCEPTION( LA(1), file_name, line );
+        end;
+
+        if ( sa_ttype /= ANTLR_COMMON_TOKEN::SKIP ) then 
+           return make_token( sa_ttype );
+        end;
+
+     when $ANTLR_RECOGNITION_EXCEPTION then
+        report_error( exception.str );
+
+     end;
+  end;
+end;
+</pre></tt>
+    <p>For example, the lexical rules: </p>
+<TT><pre>
+class LEX extends Lexer;
+
+WS   : ('\t' | '\r' | ' ') {sa_ttype := ANTLR_COMMON_TOKEN::SKIP;} ;
+PLUS : '+';
+MINUS: '-';
+INT  : ( '0'..'9' )+ ;
+ID   : ( 'a'..'z' )+ ;
+UID  : ( 'A'..'Z' )+ ;
+</PRE></tt>  would result in something like:
+<TT><pre>
+class LEX{TOKEN} < $ANTLR_TOKEN_STREAM{TOKEN} , $ANTLR_FILE_CURSOR is 
+	
+   next_token : TOKEN is
+      sa_rettoken : TOKEN;
+      continue : BOOL := true;
+      loop
+	 sa_ttype : INT := ANTLR_COMMON_TOKEN::INVALID_TYPE;
+	 reset_text;
+	 protect		-- for char stream error handling
+	    protect		-- for lexical error handling
+	       case ( LA(1) )
+	       when '\t'  , '\r'  , ' '
+	       then
+		  mWS( true );
+		  sa_rettoken := sa_return_token;
+	       when '+'
+	       then
+		  mPLUS( true );
+		  sa_rettoken := sa_return_token;
+	       when '-'
+	       then
+		  mMINUS( true );
+		  sa_rettoken := sa_return_token;
+	       when '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
+	       then
+		  mINT( true );
+		  sa_rettoken := sa_return_token;
+	       when 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 
+			'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'  then
+		  mID( true );
+		  sa_rettoken := sa_return_token;
+	       when 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 
+			'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'  then
+		  mUID( true );
+		  sa_rettoken := sa_return_token;
+	       else		-- default
+		  if ( LA(1) = EOF_CHAR ) then 
+		     upon_eof; 
+		     sa_return_token := make_token( ANTLR_COMMON_TOKEN::EOF_TYPE);
+		  else 
+		     raise #ANTLR_NO_VIABLE_ALT_FOR_CHAR_EXCEPTION( LA(1), file_name, line ); 
+		  end; -- if
+	       end; -- case
+          
+	       if ( ~void(sa_return_token) and continue ) then;
+		  sa_ttype := sa_return_token.ttype;
+		  sa_ttype := test_literals_table(sa_ttype);
+		  sa_return_token.ttype := sa_ttype;
+		  return sa_return_token;
+	       end; -- if
+	    when $ANTLR_RECOGNITION_EXCEPTION then
+	       report_error( exception );
+	       consume;
+	    end; -- protect
+	 when $ANTLR_CHAR_STREAM_EXCEPTION then
+	    raise #ANTLR_TOKEN_STREAM_EXCEPTION( exception.message );
+	 end; -- protect
+      end; -- loop
+   end; -- next_token
+  
+   mWS( sa_create_token : BOOL ) is
+      sa_ttype : INT; 
+      sa_token : TOKEN; 
+      sa_begin : INT := text.length;
+      sa_ttype := WS;
+      sa_save_index : INT;
+    
+      case ( LA(1) )
+      when '\t'
+      then
+	 match('\t');
+      when '\r'
+      then
+	 match('\r');
+      when ' '
+      then
+	 match(' ');
+      else
+	 raise #ANTLR_NO_VIABLE_ALT_FOR_CHAR_EXCEPTION( LA(1), file_name, line );
+      end; -- case
+    
+      sa_ttype := ANTLR_COMMON_TOKEN::SKIP;
+      if ( sa_create_token and void(sa_token) and sa_ttype /= ANTLR_COMMON_TOKEN::SKIP ) then
+	 sa_token := make_token( sa_ttype );
+	 sa_token.text := text.substring( sa_begin, text.length - sa_begin );
+      end; -- if
+      sa_return_token := sa_token;
+   end; -- rule
+  
+   mPLUS( sa_create_token : BOOL ) is
+      sa_ttype : INT; 
+      sa_token : TOKEN; 
+      sa_begin : INT := text.length;
+      sa_ttype := PLUS;
+      sa_save_index : INT;
+    
+      match('+');
+      if ( sa_create_token and void(sa_token) and sa_ttype /= ANTLR_COMMON_TOKEN::SKIP ) then
+	 sa_token := make_token( sa_ttype );
+	 sa_token.text := text.substring( sa_begin, text.length - sa_begin );
+      end; -- if
+      sa_return_token := sa_token;
+   end; -- rule
+  
+   mMINUS( sa_create_token : BOOL ) is
+      sa_ttype : INT; sa_token : TOKEN; sa_begin : INT := text.length;
+      sa_ttype := MINUS;
+      sa_save_index : INT;
+    
+      match('-');
+      if ( sa_create_token and void(sa_token) and sa_ttype /= ANTLR_COMMON_TOKEN::SKIP ) then
+	 sa_token := make_token( sa_ttype );
+	 sa_token.text := text.substring( sa_begin, text.length - sa_begin );
+      end; -- if
+      sa_return_token := sa_token;
+   end; -- rule
+  
+   mINT( sa_create_token : BOOL ) is
+      sa_ttype : INT;
+      sa_token : TOKEN;
+      sa_begin : INT := text.length;
+      sa_ttype := INT;
+      sa_save_index : INT;
+    
+      sa0_cnt7 : INT := 0;
+      loop
+	 if (((LA(1) >= '0' and LA(1) <= '9'))) then
+	    match_range( '0', '9' );
+	 else
+	    if ( sa0_cnt7 >= 1 ) then 
+	       break! 
+	    else 
+	       raise #ANTLR_NO_VIABLE_ALT_FOR_CHAR_EXCEPTION( LA(1), file_name, line ); 
+	    end; -- if
+	 end; -- if
+      
+	 sa0_cnt7 := sa0_cnt7 + 1;
+      end; -- loop
+      if ( sa_create_token and void(sa_token) and sa_ttype /= ANTLR_COMMON_TOKEN::SKIP ) then
+	 sa_token := make_token( sa_ttype );
+	 sa_token.text := text.substring( sa_begin, text.length - sa_begin );
+      end; -- if
+      sa_return_token := sa_token;
+   end; -- rule
+  
+   mID( sa_create_token : BOOL ) is
+      sa_ttype : INT; sa_token : TOKEN; sa_begin : INT := text.length;
+      sa_ttype := ID;
+      sa_save_index : INT;
+    
+      sa1_cnt10 : INT := 0;
+      loop
+	 if (((LA(1) >= 'a' and LA(1) <= 'z'))) then
+	    match_range( 'a', 'z' );
+	 else
+	    if ( sa1_cnt10 >= 1 ) then 
+	       break! 
+	    else 
+	       raise #ANTLR_NO_VIABLE_ALT_FOR_CHAR_EXCEPTION( LA(1), file_name, line ); 
+	    end; -- if
+	 end; -- if
+      
+	 sa1_cnt10 := sa1_cnt10 + 1;
+      end; -- loop
+      if ( sa_create_token and void(sa_token) and sa_ttype /= ANTLR_COMMON_TOKEN::SKIP ) then
+	 sa_token := make_token( sa_ttype );
+	 sa_token.text := text.substring( sa_begin, text.length - sa_begin );
+      end; -- if
+      sa_return_token := sa_token;
+   end; -- rule
+  
+   mUID( sa_create_token : BOOL ) is
+      sa_ttype : INT; sa_token : TOKEN; sa_begin : INT := text.length;
+      sa_ttype := UID;
+      sa_save_index : INT;
+    
+      sa2_cnt13 : INT := 0;
+      loop
+	 if (((LA(1) >= 'A' and LA(1) <= 'Z'))) then
+	    match_range( 'A', 'Z' );
+	 else
+	    if ( sa2_cnt13 >= 1 ) then 
+	       break! 
+	    else 
+	       raise #ANTLR_NO_VIABLE_ALT_FOR_CHAR_EXCEPTION( LA(1), file_name, line ); 
+	    end; -- if
+	 end; -- if
+      
+	 sa2_cnt13 := sa2_cnt13 + 1;
+      end; -- loop
+      if ( sa_create_token and void(sa_token) and sa_ttype /= ANTLR_COMMON_TOKEN::SKIP ) then
+	 sa_token := make_token( sa_ttype );
+	 sa_token.text := text.substring( sa_begin, text.length - sa_begin );
+      end; -- if
+      sa_return_token := sa_token;
+   end; -- rule
+  
+end; -- class
+</PRE></tt>
+    <p>ANTLR-generated lexers assume that you will be reading streams of characters. If this
+    is not the case, you must create your own lexer. </p>
+    <h3><a name="_bb13">Creating Your Own Lexer</a></h3>
+    <p>To create your own lexer, your Sather class that will doing the lexing must implement
+    interface <tt>$ANTLR_TOKEN_STREAM</tt>, which simply states that you must be able to return a
+    stream of tokens conforming to $ANTLR_TOKEN via <tt>next_token</tt>: </p>
+<TT><pre>
+abstract class $ANTLR_TOKEN_STREAM{TOKEN < $ANTLR_TOKEN} is
+  next_token : TOKEN;
+end;
+</pre></tt>
+    <p>ANTLR will not generate a lexer if you do not specify a lexical class. </p>
+    <p>Launching a parser with a non-ANTLR-generated lexer is the same as launching a parser
+    with an ANTLR-generated lexer: </p>
+    <tt><pre>lex ::= #HAND_BUILT_LEXER{MY_TOKEN}(...);
+p ::= #MY_PARSER{MY_TOKEN,ANTLR_COMMON_AST}(lex);
+p.<i>start-rule</i>;</tt></pre>
+    <p>The parser does not care what kind of object you use for scanning as as long as it can
+    answer <tt>next_token</tt>. </p>
+    <p>If you build your own lexer, and the token values are also generated by that lexer,
+    then you should inform the ANTLR-generated parsers about the token type values generated
+    by that lexer. Use the <a href="options.html#importVocab">importVocab</a> in the parsers
+    that use the externally-generated token set, and create a token definition file following
+    the requirements of the importVocab option. </p>
+    <h3><a name="_bb14"></a><a name="Lexical Rules">Lexical Rules</a> </h3>
+    <p>Lexical rules are essentially the same as parser rules except that lexical rules apply
+    a structure to a series of characters rather than a series of tokens. As with parser
+    rules, each lexical rule results in a method in the output lexer class. </p>
+    <p><b>Alternative blocks.</b> Consider a simple series of alternatives within a block: </p>
+<TT><pre>
+FORMAT : 'x' | 'f' | 'd';
+</tt></pre>
+    <p>The lexer would contain the following method: </p>
+<TT><pre>
+mFORMAT is
+  if ( c  = 'x' ) then
+    match('x');
+
+  elsif ( c = 'x' ) then
+    match('x');
+
+  elsif ( c = 'f' ) then
+    match('f');
+
+  elsif ( c = 'd' ) then
+    match('d');
+
+  else 
+    raise #ANTLR_NO_VIABLE_ALT_FOR_CHAR_EXCEPTION( ... );
+  end;
+
+  return FORMAT;
+end;
+</pre></tt>  
+    <p>The only real differences between lexical methods and grammar methods are that
+    lookahead prediction expressions do character comparisons rather than <tt>LA(i)</tt>
+    comparisons, <tt>match</tt> matches characters instead of tokens, and a <tt>return</tt> is
+    added to the bottom of the rule.</P>
+    For example, the common identifier rule would be placed directly into the <tt>next_token</tt>
+    method. That is, rule: </p>
+<TT><pre>
+ID  :   ( 'a'..'z' | 'A'..'Z' )+
+    ;
+</pre></tt>
+    <p>would not result in a method in your lexer class. This rule would become part of the
+    resulting lexer as it would be probably inlined by ANTLR: </p>
+<TT><pre>
+next_token : TOKEN is
+  case ( LA(1) ) 
+  <i>cases for operators and such here</i>
+  -- chars that predict ID token
+  case '0', '1', '2', '3' '4', '5', '6', '7', '8', '9' then
+    loop while!( c &gt; ='0' and c &lt; ='9' );
+      match_range( '0' , '9' );
+    end;
+    return make_token(ID);
+  else 
+    <i>check harder stuff here like rules
+      beginning with a..z</i>
+end;
+</pre></tt>
+    <p>If not inlined, the method for scanning identifiers would look like: </p><tt>
+    <pre>
+mID : TOKEN is
+  loop while!( c &gt; = '0' and c &lt; = '9' )
+    match_range( '0' , '9' );
+  end;
+  return ID;
+end;
+</pre></tt>
+    <p>where token names are converted to method names by prefixing them with the letter <tt>m</tt>.
+    The <tt>next_token</tt> method would become: </p><tt>
+    <pre>
+next_token : TOKEN is
+  case ( c ) 
+  <i>cases for operators and such here</i>
+  -- chars that predict ID token
+  when '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'  
+    return make_token( mID );
+  else
+    <i>check harder stuff here like rules beginning with a..z</i>
+end;
+</pre></tt>
+    <p>Note that this type of range loop is so common that it should probably be optimized to:
+    </p><tt>
+    <pre>
+loop while! ( c &gt;= '0' and c &lt;= '9' );
+    consume;
+end;
+</pre></tt>
+    <p><b>Optimization: Recursive lexical rules.</b> Lexical rules that are directly or
+    indirectly recursive are not inlined. For example, consider the following rule that
+    matches nested actions: </p><tt>
+    <pre>
+ACTION
+    :   '{' ( ACTION | ~'}' )* '}'
+    ;
+</pre></tt>
+    <p><tt>ACTION</tt> would be result in (assuming a character vocabulary of 'a'..'z', '{',
+    '}'): </p><tt>
+    <pre>
+mACTION : INT is
+    sa_ttype : INT := ACTION;
+    match('{');
+    loop
+        case ( LA(1) ) 
+        when '{' then
+            mACTION;
+        when 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 
+             'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' then
+            match_not('}');
+        else
+            break!;
+        end;
+    end;
+    match('}');
+    return sa_ttype;
+end;
+</pre></tt>
+     <p><pre>Version: $Id: //depot/code/org.antlr/release/antlr-2.7.1/doc/sa-runtime.html#1 $</pre>
+    </td>
+    </tr>
+</table>
+</body>
+</html>

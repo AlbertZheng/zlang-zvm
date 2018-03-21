@@ -1,0 +1,36 @@
+// 测试temp variable和short circuit
+
+ipaddress func1()
+{
+  return {10.8.8.8};
+}
+
+
+bool Test()
+{
+  sdword sdw1 = 1, sdw2, sdw3, sdw4;
+  string s1 = ((s1 + s2) + (s3 + s4)) + ((s1 + s2) + (s3 + s4)), s2;
+  bool b = func1() != func1();
+  string s3, s4;
+
+  s3 = ((s1 + s2) + (s3 + s4)) + ((s1 + s2) + (s3 + s4));
+  s4 = (s1 + s2) + (s3 + s4);
+
+  b = func1() != func1();
+  b = func1() != {a3ws1};
+
+  if ((sdw1 + sdw2) || (sdw3 + sdw4))
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+
+  sdw1 = (sdw1 + sdw2) || (sdw3 + sdw4);
+  sdw1 = (sdw1 + sdw2) && (sdw3 + sdw4);
+
+  return true;
+}
+

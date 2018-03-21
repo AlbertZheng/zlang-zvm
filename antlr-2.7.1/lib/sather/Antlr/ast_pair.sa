@@ -1,0 +1,94 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/ast_pair.sa#1 $
+
+*)
+
+
+-- ANTLR_AST_PAIR:  utility class used for manipulating a pair of ASTs
+-- representing the current AST root and current AST sibling.
+
+class ANTLR_AST_PAIR{AST < $ANTLR_AST{AST}} is
+
+   attr root : AST;    -- current root of tree
+   attr child : AST;   -- current child to which siblings are added
+
+   create : SAME is
+      res : SAME := new;
+      return res;
+   end;
+
+   -- Make sure that child is the last sibling
+   advance_child_to_end is
+      if ( ~void(child) ) then
+	 loop while! ( ~void( child.next_sibling ) );
+	    child := child.next_sibling;
+	 end;
+      end;
+   end;
+   
+   -- Copy an ANTLR_AST_PAIR
+   copy : ANTLR_AST_PAIR{AST} is 
+      tmp : ANTLR_AST_PAIR{AST} := new;
+      tmp.root := root;
+      tmp.child := child;
+      return tmp;
+   end;
+   
+   str : STR is
+      r, c : STR;
+      
+      if ( void(root) ) then
+	 r := "null"; 
+      else 
+	 r := root.text;
+      end;
+
+      if ( void(child) ) then
+	 c := "null"; 
+      else 
+	 c := child.text;
+      end;
+
+      return "[" + r + "," + c + "]";
+   end;
+
+   -- Add a child to the self
+   add_child( ch : AST ) is
+      if ( ~void(ch) ) then
+	 if ( void(root) ) then
+	    -- Make new child the current root
+	    root := ch;
+	 else
+	    if ( void(child) ) then
+	       -- Add new child to current root
+	       root.first_child := ch;
+	    else
+	       child.next_sibling := ch;
+	    end;
+	 end;
+	 -- Make new child the current child
+	 child := ch;
+	 advance_child_to_end;
+      end;
+   end;
+   
+   -- Make an AST the root of self
+   make_root( rt : AST ) is
+      if ( ~void(rt) ) then
+	 -- Add the current root as a child of new root
+	 rt.add_child(root);
+	 -- The new current child is the last sibling of the old root
+	 child := root;
+	 advance_child_to_end;
+	 -- Set the new root
+	 root := rt;
+      end;
+   end;
+	 
+
+end;

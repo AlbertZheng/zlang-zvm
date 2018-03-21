@@ -1,0 +1,9 @@
+-o main main.sa
+
+../../../lib/sather/Library.module
+
+-has JAVA_LEXER.sa                   JAVA_LEXER
+-has JAVA_TOKENTYPES.sa              JAVA_TOKENTYPES
+-has JAVA_RECOGNIZER.sa              JAVA_RECOGNIZER
+-has JAVA_TREE_PARSER.sa             JAVA_TREE_PARSER
+-has JAVA_TREE_PARSER_TOKENTYPES.sa  JAVA_TREE_PARSER_TOKENTYPES

@@ -1,0 +1,30 @@
+# Eclipse
+.classpath
+.project
+.settings
+
+# Visual Studio Code
+.vscode
+.antlr
+
+# /
+/.cvsignore
+/work
+
+# /tests/
+/tests/junit*.properties
+
+# /bin/
+/bin
+
+# Mac
+*.DS_Store
+
+# gnu configure
+config.cache
+config.log
+config.status
+
+*.iml
+.idea
+.deps

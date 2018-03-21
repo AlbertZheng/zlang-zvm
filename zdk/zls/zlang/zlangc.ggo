@@ -1,0 +1,27 @@
+#
+# zlangc支持的命令行options
+#
+
+package "zlangc"
+version "1.0"
+
+# -D macro
+option "define-macro" D "A macro" string no
+
+# -I include-path
+option "include-path" I "A include path" string no
+
+# -o obejct-file
+option "object-file" o "Specific obejct file" string no
+
+# --trace-lexer
+option "trace-lexer" - "Trace lexer" no
+
+# --trace-ast
+option "trace-ast" - "Trace AST generated" no
+
+# --trace-symbol-table
+option "trace-symbol-table" - "Trace symbol table generated" no
+
+# --trace-byte-code
+option "trace-code" - "Trace byte code generated" no

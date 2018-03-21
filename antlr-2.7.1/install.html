@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<title>Installation Instructions for ANTLR 2.6.0</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<table border="0">
+  <tr>
+    <td align="center" valign="top" width="120">&nbsp;<p><a href="http://www.jguru.com"><img
+    src="doc/j-guru-blue.jpg" width="70" height="80" alt="j-guru-blue.jpg (8086 bytes)"
+    border="0"></a></p>
+    <p><a href="http://www.antlr.org" style="color: rgb(255,255,255)"><font face="Arial"
+    color="#000000"><small><strong>ANTLR</strong></small></font></a></p>
+    <p><a href="http://www.jguru.com"><small><font face="Arial" color="#000000"><strong>jGuru</strong></font></small></a></td>
+    <td></td>
+    <td valign="top" width="520"><table border="0">
+      <tr>
+        <td width="520" bgcolor="#99CCFF"><strong>I<font size="2">NSTALLATION</font></strong></td>
+      </tr>
+    </table>
+    <p><strong>ANTLR 2.7.1 Installation</strong></p>
+    <p>ANTLR comes as a single zip or compressed tar file. Unzipping the file you receive will
+    produce a directory called <tt>antlr-2.7.1</tt> with subdirectories <tt>antlr</tt>, <tt>doc</tt>,
+    <tt>examples</tt>, <font face="Courier New">cpp</font>, and <font face="Courier New">examples.cpp</font>.
+    You need to place the <tt>antlr-2.7.1</tt> directory in your <tt>CLASSPATH</tt>
+    environment variable. For example, if you placed <tt>antlr-2.7.1</tt> in directory <tt>/tools</tt>,
+    you need to append </p>
+    <blockquote>
+      <p><tt>/tools/antlr-2.7.1</tt> </p>
+    </blockquote>
+    <p>to your <tt>CLASSPATH</tt> or. </p>
+    <blockquote>
+      <p><tt>\tools\antlr-2.7.1</tt></p>
+    </blockquote>
+    <p>if you work on an NT or Win95 box.</p>
+    <p>References to <tt>antlr.*</tt> will map to <tt>/tools/antlr-2.7.1/antlr/*.class</tt>.</p>
+    <p>You must have at least JDK 1.1 installed properly on your machine.&nbsp; The ASTFrame
+    AST viewer uses Swing 1.1 package names now.</p>
+    <p><strong>ParseView Debugger</strong></p>
+    <p>The ParseView debugger by Scott Stanchfield must be downloaded separately if you want
+    to use the &quot;-debug&quot; option of ANTLR.&nbsp; Click <a
+    href="http://www.ANTLR.org/nirvana/ParseView.zip">here</a> to download the debugger.
+    &nbsp; Then unzip it over the antlr-2.7.1 directory (the zip contains antlr.debugger.*
+    etc...).</p>
+    <p><strong>JAR FILE</strong></p>
+    <p>Try using the runtime library <font face="Courier New">antlr.jar</font> file. Place it
+    in your <font face="Courier New">CLASSPATH</font> instead of the <font face="Courier New">antlr-2.7.1</font>
+    directory. The jar includes all <strong>parse-time</strong> files needed (if it is missing
+    a file, email <a href="mailto:parrt@magelang.com">parrt@jguru.com</a>).&nbsp; You can make
+    <font face="Courier New">antlr.debug.jar</font> (has antlr.jar stuff pluse the debug
+    classes needed by parseview) by running mkdebugjar. You cannot run the antlr tool itself
+    with the jar, but your parsers should run with just this jar file. &nbsp; It's pretty
+    small, around 50k uncompressed.</p>
+    <table border="0">
+      <tr>
+        <td width="520" bgcolor="#99CCFF"><strong>R<font size="2">UNNING </font>A<font size="2">NTLR</font></strong></td>
+      </tr>
+    </table>
+    <p>ANTLR is a command line tool (although many development environments let you run ANTLR
+    on grammar files from within the environment). The <font face="Courier New">main</font>
+    method within <font face="Courier New">antlr.Tool</font> is the ANTLR entry point.</p>
+    <blockquote>
+      <p><tt>java antlr.Tool file.g</tt> </p>
+    </blockquote>
+    <p>The command-line option is <font face="Courier New">-diagnostic</font>, which generates
+    a text file for each output parser class that describes the lookahead sets. Note that
+    there are number of options that you can specify at the grammar class and rule level.</p>
+    <p>Options -trace, -traceParser, -traceTreeParser may be used to track the lexer, parser,
+    and tree parser invocations.&nbsp; Run the tool without any arguments to see the complete
+    option list for the comamnd line.</p>
+    <p>Try the new <font face="Courier New">-html</font> option to generate HTML output of
+    your grammar(s).&nbsp; Not completed, of course... :(</p>
+    <p>If you have trouble running ANTLR, ensure that you have Java installed correctly and
+    then ensure that you have the appropriate <tt>CLASSPATH</tt> set. </td>
+  </tr>
+</table>
+</body>
+</html>

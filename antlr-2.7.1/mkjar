@@ -1,0 +1,65 @@
+#
+# A shell script that builds the antlr.jar file
+# The debugging event stuff does not get included by this script.
+#
+# $Id: //depot/code/org.antlr/release/antlr-2.7.1/mkjar#2 $
+#
+jar cvf antlr.jar \
+	antlr/DefineGrammarSymbols.class \
+	antlr/CharStreamException.class \
+	antlr/CharStreamIOException.class \
+	antlr/ANTLRException.class \
+	antlr/FileCopyException.class \
+	antlr/FileLineFormatter.class \
+	antlr/DefaultFileLineFormatter.class \
+	antlr/MismatchedCharException.class \
+	antlr/MismatchedTokenException.class \
+	antlr/NoViableAltException.class \
+	antlr/NoViableAltForCharException.class \
+	antlr/RecognitionException.class \
+	antlr/SemanticException.class \
+	antlr/TokenStreamException.class \
+	antlr/TokenStreamIOException.class \
+	antlr/TokenStreamRecognitionException.class \
+	antlr/TokenStreamRetryException.class      \
+	antlr/ANTLRHashString.class \
+	antlr/ANTLRStringBuffer.class \
+	antlr/ASTFactory.class \
+	antlr/ASTNULLType.class \
+	antlr/ASTPair.class \
+	antlr/BaseAST.class \
+	antlr/ByteBuffer.class \
+	antlr/CharBuffer.class \
+	antlr/InputBuffer.class \
+	antlr/CharQueue.class \
+	antlr/CharScanner.class \
+	antlr/CommonAST.class \
+	antlr/CommonASTWithHiddenTokens.class \
+	antlr/CommonToken.class \
+	antlr/CommonHiddenStreamToken.class \
+	antlr/LLkParser.class \
+	antlr/Parser.class \
+	antlr/Token.class \
+	antlr/TokenBuffer.class \
+	antlr/TokenQueue.class \
+	antlr/TokenStream.class \
+	antlr/TokenStreamHiddenTokenFilter.class \
+	antlr/TokenStreamBasicFilter.class \
+	antlr/TokenStreamSelector.class \
+	antlr/Tool.class \
+	antlr/TreeParser.class \
+	antlr/collections/AST.class \
+	antlr/collections/ASTEnumeration.class \
+	antlr/collections/impl/ASTArray.class \
+	antlr/collections/impl/BitSet.class \
+	antlr/collections/impl/ASTEnumerator.class \
+	antlr/collections/List.class \
+        antlr/collections/Stack.class \
+	antlr/collections/impl/LList.class \
+	antlr/collections/impl/LLCell.class \
+        antlr/collections/impl/Vector.class \
+        antlr/collections/impl/VectorEnumerator.class \
+	antlr/LexerSharedInputState.class \
+	antlr/ParserSharedInputState.class \
+	antlr/TreeParserSharedInputState.class \
+	antlr/debug/misc/*.class

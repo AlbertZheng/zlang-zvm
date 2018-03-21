@@ -1,0 +1,5 @@
+-has istream.sa          $ISTREAM
+-has ifstream.sa          IFSTREAM
+-has circular_queue.sa    CIRCULAR_QUEUE
+-has char_set.sa          CHAR_SET
+-has int_set.sa           INT_SET

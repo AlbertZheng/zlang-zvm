@@ -1,0 +1,19 @@
+table<string> gf1(table<string> & ras, sdword sdw, sdword & rsdw)
+{
+  udword udw;
+  gf1(ras, sdw, rsdw);
+  //gf1(ras, sdw, udw);  // Semantic error
+  //gf1(gf1(ras, sdw, rsdw), sdw, rsdw);  // Semantic error
+  return ras;
+}
+
+static void lf1()
+{
+  table<string> as;
+  sdword sdw;
+  table<sdword> asdw;
+
+  gf1(as, sdw, sdw);
+  gf1(as, sdw, asdw[1]);
+}
+

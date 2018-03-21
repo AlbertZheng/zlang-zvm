@@ -1,0 +1,250 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<title>ANTLR 2.7.1 Release Notes</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<table border="0">
+  <tr>
+    <td align="center" valign="top" width="120"><br>
+    <a href="http://www.jguru.com"><img src="j-guru-blue.jpg" width="70" height="80"
+    alt="j-guru-blue.jpg (8086 bytes)" border="0"></a><p><a href="http://www.antlr.org"
+    style="color: rgb(255,255,255)"><font face="Arial" color="#000000"><small><strong>ANTLR</strong></small></font></a></p>
+    <p><a href="http://www.jguru.com"><small><font face="Arial" color="#000000"><strong>jGuru</strong></font></small></a></td>
+    <td></td>
+    <td valign="top" width="520"><font size="6" face="Courier New"><strong>ANTLR 2.7.1<br>
+    Release Notes</strong></font><p><font face="Arial" size="2"><em>October 1, 2000</em></font></p>
+    <p><font face="Arial"><font size="2">The </font><small>ANTLR 2.7.1 release is a bug fix
+    release, brought to you by those hip cats at <a href="http://www.jguru.com">jGuru.com</a>.
+    &nbsp; One of the bug fixes, however, allows UNICODE characters to be recognized for the
+    first time. :)</small></font></p>
+    <h3><strong><small><font face="Arial">Enhancements</font></small></strong></h3>
+    <p><small><font face="Arial">ANTLR 2.7.1 has a few enhancements:</font></small><ul>
+      <li><small><font face="Arial">ANTLR now allows UNICODE characters because Terence made
+        case-statement expressions more efficient ;)&nbsp; See the unicode example in the
+        distribution and the brief blurb in the <a
+        href="http://www.antlr.org/doc/lexer.html#unicode">documentation</a>.</font></small></li>
+      <li><small><font face="Arial">Massively improved C++ code generator (see below).</font></small></li>
+      <li><small><font face="Arial">Added automatic column setting support.&nbsp; See updated <a
+        href="lexer.html#trackingcolumn">doc</a> and new examples/java/columns directory.</font></small></li>
+      <li><small><font face="Arial">Ter added </font><font face="Courier New">throws</font><font
+        face="Arial"> to tree and regular parsers .</font></small></li>
+      <li><small><font face="Arial">Added an </font><font face="Courier New">antlr/extras</font><font
+        face="Arial"> directory, currently containing only antlr-emacs.el by<small> </small><a
+        href="mailto:Christoph.Wedler@sap-ag.de">Christoph.Wedler@sap-ag.de</a>.&nbsp; Thanks,
+        Christoph!</small></font></li>
+    </ul>
+    <h3><font face="Arial"><strong><small>C++ Code Generation</small></strong></font></h3>
+    <p><small><font face="Arial">Pete Wells and Ric Klaren have pretty much gutted the C++
+    code generator to use templates and so on.&nbsp; Here are few notes (with
+    lib/cpp/Changelog having more goodies).&nbsp; Ric has totally worked his ass off to make
+    the C++ what it is now! :)</font></small></p>
+    <p><small><font face="Arial">Enhancements to C++ code generator for: </font></small><ul>
+      <li><small><font face="Arial">* #line generation for easier debugging of action code. Turn
+        on/off<br>
+        with option genHashLines (grammar option). </font></small></li>
+      <li><small><font face="Arial">* Cleaner generated code, by providing options to specify
+        namespace<br>
+        prefixes. Grammar options namespaceAntlr and namespaceStd can<br>
+        be set to &quot;antlr::&quot; and &quot;std::&quot; or to blank if your compiler<br>
+        doesn't support namespaces. </font></small></li>
+      <li><small><font face="Arial">* Generate comments to explain what the bitsets represent. </font></small></li>
+      <li><small><font face="Arial">* Fix bug with -traceTreeParser code. </font></small></li>
+      <li><small><font face="Arial">* Avoid warnings about unused variable _saveIndex. </font></small></li>
+      <li><small><font face="Arial">* Remove final, illegal comma in token types enum. </font></small></li>
+    </ul>
+    <p><small><font face="Arial">Enhancements to C++ support library for: </font></small><ul>
+      <li><small><font face="Arial">* Performance enhancements. Thanks to several people for<br>
+        suggestions/patches here. Improvements to memory management for<br>
+        building strings, and buffering of tokens. </font></small></li>
+      <li><small><font face="Arial">* Support for Metrowerks Codewarrior, and Sun CC 5.0. </font></small></li>
+      <li><small><font face="Arial">* Fix problem with multi-threaded lexers using static
+        variable. </font></small></li>
+      <li><small><font face="Arial">* Slight tidy up (more planned). </font></small></li>
+    </ul>
+    <p><small><font face="Arial">Additionally, there have been enhancements made to the C++
+    side to mirror the Java side changes.</font></small></p>
+    <p><small><font face="Arial">Ric Klaren (2.7.1a3 C++ changes) says: </font></small><ul>
+      <li><small><font face="Arial">- action.g allow ':' in ID rule so C++ namespace qualifiers
+        work.</font></small></li>
+      <li><small><font face="Arial">- CppCodegernator the '::' fix for namespaceXXX options. As
+        requested by Michael Schmitt.</font></small></li>
+      <li><small><font face="Arial">- Several cleanups in the Exception classes (basically a
+        hoisting of code) and one or two new constructors with more line/column param's.</font></small></li>
+      <li><small><font face="Arial">- Default value for column in LexerInputState to 1. as
+        suggested by someone on the list.. (name I would have to look up)</font></small></li>
+      <li><small><font face="Arial">- A makefile for the C++ lib directory. Not yet the autoconf
+        stuff posted by someone (whose name I would also have to look up) it would imply a bigger
+        workover of the lib/cpp directory. Which is harder to do with diff's.</font></small></li>
+      <li><small><font face="Arial">- Some changes I made after enabling the effective C++
+        warnings on g++ (minor drivle basically.. in most places not really needed)</font></small></li>
+      <li><small><font face="Arial">- Several virtuals added to methods. Based on a suggestion
+        also by Ernest Pasour. It makes the error messages from the thrown exceptions a lot better
+        </font></small></li>
+    </ul>
+    <h3><small><font face="Arial"><strong>Bug Fixes</strong></font></small></h3>
+    <p><small><font face="Arial">In no particular order, here are the improvements/fixes made
+    to 2.7.0 to arrive at 2.7.1 (via 2.7.1a1..a4):</font></small><ul>
+      <li><small><font face="Arial">columns started at 0 for line 1.&nbsp; fixed.</font></small></li>
+      <li><small><font face="Arial">Bob McWhirter added -o fix so that antlr looks for import
+        vocab stuff in -o director if not found in $CWD (current working directory). </font></small></li>
+      <li><small><font face="Arial">Added optimization so that large unicode ranges don't result
+        in giant switch case expressions. For example, added charVocabulary='\u0003'..'\uffff' to
+        java.g. Took antlr 24s to generate 51k lexer file vs 9sec without. New 2.7.1 did it with
+        big vocab in 14 sec. Oh, and the interesting thing is that with the big vocab and new
+        optimization, it's actually smaller than with vocab set to ASCII. :)</font></small></li>
+      <li><small><font face="Arial">added a build script.</font></small></li>
+      <li><small><font face="Arial">Robert Colquhoun <a href="mailto:rjc@trump.net.au">rjc@trump.net.au</a>
+        gave me a patch to pull stuff out of Tool.java that was causing it to be required for
+        runtime even.</font></small></li>
+      <li><font face="Arial"><small>Jerry James <small><a href="mailto:(james@eecs.ukans.edu">(</small>james@eecs.ukans.edu</a>)
+        gave me a patch to make the labels for heterogeneous tree nodes match the specific AST
+        type rather than plain AST.</small></font></li>
+      <li><small><font face="Arial">ANTLR didn't like curlies in quotes (preproc.g was hosed).
+        &nbsp; It now parses:</font></small></li>
+    </ul>
+    <blockquote>
+      <p><font face="Courier New"><small>class A extends Parser; </small></font></p>
+      <p><font face="Courier New"><small>tokens {<br>
+      // hi |}<br>
+      /*<br>
+      fds<br>
+      *}*/<br>
+      TOK_LBRACE=&quot;{&quot;;<br>
+      TOK_RBRACE=&quot;}&quot;;<br>
+      } </small></font></p>
+      <p><font face="Courier New"><small>a : &quot;{&quot; B &quot;}&quot;;</small></font></p>
+    </blockquote>
+    <ul>
+      <li><small><font face="Arial">Fixed C++ code generator to allow ~(Z|G)</font></small></li>
+      <li><small><font face="Arial">Parser.getInputState called setInputState.</font></small></li>
+      <li><small><font face="Arial">ANTLR now allows comments between header, options, and tokens
+        and then '{' now.&nbsp; Examples: </font></small></li>
+    </ul>
+    <blockquote>
+      <p><font face="Courier New"><small>options //fdkjfds<br>
+      {<br>
+      k = 1;<br>
+      } </small></font></p>
+      <p><font face="Courier New"><small>tokens //testing<br>
+      {<br>
+      A = &quot;a&quot;;<br>
+      }</small></font></p>
+    </blockquote>
+    <ul>
+      <li><small><font face="Arial">Made fields of CommonToken protected (open to subclasses),
+        added col. added column tracking support; tabs are counted as 1 unless you override tab().
+        Called from consume(); bumps by one by default. Overhead is minimal; only called on tabs.
+        extra increment for all consume()s now extra int in CommonToken.</font></small></li>
+    </ul>
+    <blockquote>
+      <p><font face="Courier New"><small>/**</small><br>
+      <small>advance the current column number by an appropriate amount. If you do not override
+      this to specify how much to jump for a tab, then tabs are counted as one char. This method
+      is called from consume().<br>
+      */<br>
+      public void tab() {<br>
+      // update inputState.column as function of<br>
+      // inputState.column and tab stops.<br>
+      // For example, if tab stops are columns 1</small><br>
+      <small>// and 5 etc... and column is 3, then add 2</small><br>
+      <small>// to column.<br>
+      &nbsp; inputState.column++;<br>
+      } </small></font></p>
+    </blockquote>
+    <ul>
+      <li><small><font face="Arial">added CharScanner.setColumn</font></small></li>
+      <li><small><font face="Arial">warnings were going to stdout, make go to stderr.</font></small></li>
+      <li><small><font face="Arial">added check for unterminated rules. Labels in column 1 result
+        in a warning.</font></small></li>
+      <li><small><font face="Arial">wasn't providing always exactly 4 digits for \u chars in
+        JavaCharFormatter.escapeChar.</font></small></li>
+      <li><small><font face="Arial">Fixed that nasty follow cycle grammar analysis bug Tom Moog
+        and others found.</font></small></li>
+      <li><small><font face="Arial">C++: CharScanner.cpp toLower, changed arg from char to int. </font></small></li>
+      <li><small><font face="Arial">added column support to C++ output </font></small></li>
+      <li><small><font face="Arial">Sather fixes put in, brought up to snuff with Java/C++.</font></small></li>
+      <li><small><font face="Arial">ANTLR continued on after discovering duplicate grammar.
+        'caused later exception.</font></small></li>
+      <li><small><font face="Arial">Bug fix: $setType( w ); didn't work because of the leading
+        space.</font></small></li>
+      <li><small><font face="Arial">For the java.tree.g grammar: the NEW operator didn't allow an
+        optional (objBlock)?</font></small></li>
+      <li><small><font face="Arial">HTML: Added lots of tweaks to html.g, Made blockquote handle
+        nested content.&nbsp; Fixed bug in COMMENT_DATA that wouldn't let '-' appear in comment.
+        Made COMMENT scarf WS after comment </font></small></li>
+      <li><small><font face="Arial">Added to runtime jars (bigger but too lazy to weed out
+        unnecessary var refs that force inclusion): </font></small></li>
+    </ul>
+    <blockquote>
+      <p><small><font face="Arial">antlr/DefineGrammarSymbols.class<br>
+      antlr/ANTLRGrammarParseBehavior.class<br>
+      antlr/MakeGrammar.class<br>
+      antlr/ANTLRParser.class<br>
+      antlr/ANTLRTokenTypes<br>
+      antlr/LLkGrammarAnalyzer<br>
+      antlr/GrammarAnalyzer </font></small></p>
+    </blockquote>
+    <ul>
+      <li><small><font face="Arial">Added constructors. </font></small></li>
+    </ul>
+    <blockquote>
+      <p><font face="Courier New"><small>public CommonASTWithHiddenTokens() {<br>
+      &nbsp; super();<br>
+      } </small></font></p>
+      <p><font face="Courier New"><small>public CommonASTWithHiddenTokens(Token tok) {<br>
+      &nbsp; super(tok);<br>
+      }</small></font></p>
+    </blockquote>
+    <h3><small><font face="Arial"><strong>ANTLR Installation</strong></font></small></h3>
+    <p><small><font face="Arial">ANTLR comes as a single zip or compressed tar file. Unzipping
+    the file you receive will produce a directory called <tt>antlr-2.7.1</tt> with
+    subdirectories <tt>antlr</tt>, <tt>doc</tt>, <tt>examples</tt>, cpp, and examples.cpp. You
+    need to place the <tt>antlr-2.7.1</tt> directory in your <tt>CLASSPATH</tt> environment
+    variable. For example, if you placed <tt>antlr-2.7.1</tt> in directory <tt>/tools</tt>,
+    you need to append </font></small></p>
+    <blockquote>
+      <p><small><font face="Arial"><tt>/tools/antlr-2.7.1</tt> </font></small></p>
+    </blockquote>
+    <p><small><font face="Arial">to your <tt>CLASSPATH</tt> or. </font></small></p>
+    <blockquote>
+      <p><small><font face="Arial"><tt>\tools\antlr-2.7.1</tt></font></small></p>
+    </blockquote>
+    <p><small><font face="Arial">if you work on an NT or Win95 box.</font></small></p>
+    <p><small><font face="Arial">References to <tt>antlr.*</tt> will map to <tt>/tools/antlr-2.7.1/antlr/*.class</tt>.</font></small></p>
+    <p><small><font face="Arial">You must have at least JDK 1.1 installed properly on your
+    machine.&nbsp; The ASTFrame AST viewer uses Swing 1.1.</font></small></p>
+    <h4><small><font face="Arial"><strong>JAR FILE</strong></font></small></h4>
+    <p><small><font face="Arial">Try using the <strong>runtime</strong> library </font><font
+    face="Courier New">antlr.jar</font><font face="Arial"> file. Place it in your CLASSPATH
+    instead of the antlr-2.7.1 directory. The jar includes all <strong>parse-time</strong>
+    files needed (if it is missing a file, email <a href="mailto:parrt@magelang.com">parrt@jguru.com</a>)
+    You cannot run the antlr tool itself with the jar, but your parsers should run with just
+    this jar file. &nbsp; It's pretty small, around 75k uncompressed.</font></small></p>
+    <h4><small><font face="Arial"><strong>RUNNING ANTLR</strong></font></small></h4>
+    <p><small><font face="Arial">ANTLR is a command line tool (although many development
+    environments let you run ANTLR on grammar files from within the environment). The main
+    method within antlr.Tool is the ANTLR entry point.</font></small></p>
+    <blockquote>
+      <p><small><font face="Arial"><tt>java antlr.Tool file.g</tt> </font></small></p>
+    </blockquote>
+    <p><small><font face="Arial">The command-line option is -diagnostic, which generates a
+    text file for each output parser class that describes the lookahead sets. Note that there
+    are number of options that you can specify at the grammar class and rule level.</font></small></p>
+    <p><small><font face="Arial">Options -trace, -traceParser, -traceTreeParser may be used to
+    track the lexer, parser, and tree parser invocations.</font></small></p>
+    <p><small><font face="Arial">Try the new -html option to generate HTML output of your
+    grammar(s); this is only partially done.</font></small></p>
+    <p><small><font face="Arial">If you have trouble running ANTLR, ensure that you have Java
+    installed correctly and then ensure that you have the appropriate <tt>CLASSPATH</tt> set.</font></small></p>
+    <small><pre><font face="Arial" size="1">Version: $Id: //depot/code/org.antlr/release/antlr-2.7.1/doc/antlr271release.html#2 $</font></pre>
+    </small></td>
+  </tr>
+</table>
+</body>
+</html>

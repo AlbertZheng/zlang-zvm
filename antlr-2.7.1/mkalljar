@@ -1,0 +1,14 @@
+#
+# A shell script that builds the antlrall.jar file
+# The debugging event stuff does not get included by this script.
+#
+# $Id: //depot/code/org.antlr/main/main/mkantlrall.jar#1 $
+#
+jar cvf antlrall.jar \
+	antlr/actions/cpp/*.class \
+	antlr/actions/java/*.class \
+	antlr/actions/sather/*.class \
+	antlr/*.class \
+	antlr/collections/*.class \
+	antlr/collections/impl/*.class \
+	antlr/preprocessor/*.class

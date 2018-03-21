@@ -1,0 +1,41 @@
+(* 
+
+  ANTLR Translator Generator
+  Project led by Terence Parr at http://www.jGuru.com
+  Software rights: http://www.antlr.org/RIGHTS.html
+ 
+  $Id: //depot/code/org.antlr/release/antlr-2.7.1/lib/sather/Antlr/scanner_exception.sa#1 $
+
+*)
+
+class ANTLR_SCANNER_EXCEPTION < $STR is
+
+   attr what   : STR;
+   attr line   : INT;
+   -- attr column : INT;
+   -- attr c      : INT;
+  
+   create : SAME is 
+      res : SAME := new;
+      res.what := "scanner error";
+      return res;
+   end;
+
+   create ( m : STR ) : SAME is
+      res : SAME := new;
+      res.what := m;
+      return res;
+   end;
+
+   create ( w : STR , l : INT ) : SAME is
+      res : SAME := new;
+      res.what := w;
+      res.line := l;
+      return res;
+   end;
+
+   str : STR is
+      return "line(" + line + "), " + what;
+   end;
+
+end;

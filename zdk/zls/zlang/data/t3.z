@@ -1,0 +1,142 @@
+/*
+ * 这个用来测试ZLang compiler的语法、语义分析和代码产生。
+ */
+
+extern bool EGz1, EGz2;
+extern byte EGb1, EGb2;
+extern sdword EGsdw1, EGsdw2;
+extern udword EGudw1, EGudw2;
+extern string EGstring1, EGstring2;
+extern ipaddress EGipaddress1, EGipaddress2;
+extern pport  EGpport1, EGpport2;
+
+extern table<bool> EGtb1;
+extern table<byte> EGtbyte1;
+extern table<sdword> EGtsdw1;
+extern table<udword> EGtudw1;
+extern table<string> EGtstring1;
+extern table<ipaddress> EGtipaddress1;
+extern table<pport>  EGtpport1;
+
+extern bool EGf1(bool z);
+extern byte EGf2(byte b);
+extern sdword EGf3(sdword sdw);
+extern udword EGf4(udword udw);
+extern string EGf5(string s);
+extern ipaddress EGf6(ipaddress ip);
+extern pport EGf7(pport p);
+
+extern table<bool> EGf11(table<bool> z);
+extern table<byte> EGf21(table<byte> b);
+extern table<sdword> EGf31(table<sdword> sdw);
+extern table<udword> EGf41(table<udword> udw);
+extern table<string> EGf51(table<string> s);
+extern table<ipaddress> EGf61(table<ipaddress> ip);
+extern table<pport> EGf71(table<pport> p);
+
+
+bool Gz1 = false, Gz2=true;
+byte Gb1=0x00, Gb2=0XFF;
+sdword Gsdw1=2147483647, Gsdw2=-2147483648;
+udword Gudw1=0, Gudw2=4294967295;
+string Gstring1, Gstring2="1234567890abcdefghijklmnopqrstuvwxyz";
+ipaddress Gip1={192.168.8.90}, Gip2={10.8.8.8};
+pport Gport1={80/tcp}, Gport2={21/udp};
+
+table<bool> Gtz1 = { "false" = false, "true" = true};
+table<byte> Gtb1 = { "0x00" = 0 , "0XFF" = 0xff};
+table<sdword> Gtsdw1 = { "2147483647" = 2147483647, "-2147483648" = -2147483648 };
+table<udword> Gtudw1 = { "4294967295" = 4294967295 };
+table<string> Gtstring1 = { 128 = "1234567890abcdefghijklmnopqrstuvwxyz",
+                            true = "true",
+                            {10.8.8.8} = "q3ws2" };
+table<ipaddress> Gtip1 = { "develop" = {192.168.8.90} };
+table<pport> Gtport1 = { "http" = {80/tcp}, "ftp" = {21/udp} };
+
+
+bool predicate1()
+{
+  bool z1 = false, z2=true;
+  byte b1=0x00, b2=0XFF;
+  sdword sdw1=2147483647, sdw2=-2147483648;
+  udword udw1=0, udw2=4294967295;
+  string s1, s2="1234567890abcdefghijklmnopqrstuvwxyz";
+  ipaddress ip1={192.168.8.90}, ip2={10.8.8.8};
+  pport port1={80/tcp}, port2={21/udp};
+
+  table<bool> tz1 = { "false" = false, "true" = true};
+  table<byte> tb1 = { "0x00" = 0 , "0XFF" = 0xff};
+  table<sdword> tsdw1 = { "2147483647" = 2147483647, "-2147483648" = -2147483648 };
+  table<udword> tudw1 = { "4294967295" = 4294967295 };
+  table<string> ts1 = { 128 = "1234567890abcdefghijklmnopqrstuvwxyz",
+                        true = "true",
+                        {10.8.8.8} = "q3ws2" };
+  table<ipaddress> tip1 = { "develop" = {192.168.8.90} };
+  table<pport> tport1 = { "http" = {80/tcp}, "ftp" = {21/udp} };
+
+  table<string> tresult;
+  tresult = m1(z1, b1, sdw1, udw1, s1, ip1, port1,
+               tz1, tb1, tsdw1, tudw1, ts1, tip1, tport1);
+
+  return(true);
+}
+
+table<string> m1(bool z, byte b, sdword sdw, udword udw, string s, ipaddress ip, pport p,
+                 table<bool> tz, table<byte> tb, table<sdword> tsdw, table<udword> tudw,
+                 table<string> ts, table<ipaddress> tip, table<pport> tp)
+{
+  table<string> tresult;
+
+  tresult = m2(z, b, sdw, udw, s, ip, p,
+               tz, tb, tsdw, tudw, ts, tip, tp);
+
+  return(tresult);
+}
+
+table<string> m2(bool z, byte b, sdword sdw, udword udw, string s, ipaddress ip, pport p,
+                 table<bool> tz, table<byte> tb, table<sdword> tsdw, table<udword> tudw,
+                 table<string> ts, table<ipaddress> tip, table<pport> tp)
+{
+  bool ztmp = true;
+
+  return(gf1(z, b, sdw, udw, s, ip, p, tz, tb, tsdw, tudw, ts, tip, tp));
+}
+
+static table<string> gf1(bool z, byte b, sdword sdw, udword udw, string s, ipaddress ip, pport p,
+                         table<bool> tz, table<byte> tb, table<sdword> tsdw, table<udword> tudw,
+                         table<string> ts, table<ipaddress> tip, table<pport> tp)
+{
+  sdword sdw1 = 0x8080;
+  byte b1 = 0xa0;
+
+  ++sdw1;
+  sdw1--;
+  sdw1++;
+  --sdw1;
+
+  sdw1 = ++sdw1 ^ 0xFFFF | 0x1010 & 0xa0a0 + 1 << 8 >> 6 - 100 * 80 / 256 % 8 -
+         (sdword)b1-- + (tsdw[1] - tb["abcdef"]);
+
+  if (ip != {192.168.8.80})
+  {
+    while (p == {80/tcp})
+    {
+      if (tip["q3ws1"] == {10.8.8.8})
+      {
+        tip["q3ws1"] = {192.168.8.90};
+        break;
+      }
+      else
+      {
+        p = {80/tcp};
+        s = "hello";
+        ts[1] = s;
+        EGtstring1 = ts;
+        continue;
+      }
+    }
+  }
+
+  return(ts);
+}
+

@@ -1,0 +1,56 @@
+class M is
+
+   -- Define a selector that can handle nested include files.
+   -- These variables are public so the parser/lexer can see them.
+   shared selector : ANTLR_TOKEN_STREAM_SELECTOR{ANTLR_COMMON_TOKEN};
+   shared parser : P_PARSER{ANTLR_COMMON_TOKEN,ANTLR_COMMON_AST};
+   shared main_lexer : P_LEXER{ANTLR_COMMON_TOKEN};
+
+   create : SAME is
+      res ::= new;
+      res.selector := #ANTLR_TOKEN_STREAM_SELECTOR{ANTLR_COMMON_TOKEN};
+      return res;
+   end;
+
+end;
+
+class MAIN is
+
+   main ( args : ARRAY{STR} ) is
+
+      if ( args.size < 2 ) then
+	 #OUT + "usage " + args[0] + " <filename>\n";
+	 return;
+      end;
+	 
+      f : IFSTREAM := IFSTREAM::open_for_read( args[1] );
+
+      if ( void(f) ) then
+	 #OUT + "file \"" + args[1] + "\" not found\n";
+	 return;
+      end;
+
+      protect
+
+	 m ::= #M;
+	 
+	 -- attach java lexer to the input stream,
+	 M::main_lexer := #P_LEXER{ANTLR_COMMON_TOKEN}( f );
+
+	 -- notify selector about starting lexer; name for convenience
+	 M::selector.add_input_stream( M::main_lexer, "main");
+	 M::selector.select("main"); -- start with main P lexer
+
+	 -- Create parser attached to selector
+	 M::parser := #P_PARSER{ANTLR_COMMON_TOKEN,ANTLR_COMMON_AST}( M::selector );
+
+	 -- Parse the input language: P
+	 M::parser.file_name( args[1] );
+	 M::parser.startRule;
+	 
+      when $ANTLR_RECOGNITION_EXCEPTION then
+	 #ERR + "exception: " + exception.str + "\n";	 
+      end;
+      
+   end;
+end;

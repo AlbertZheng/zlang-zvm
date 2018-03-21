@@ -1,0 +1,27 @@
+extern string GstringDefaultDomain;
+extern table<ipaddress> GetIPv4Address(string stringHostName);
+
+string GstringHostName;
+
+sdword GetIPv4AddressCount(string stringHostName)
+{
+  string stringLookup = GstringDefaultDomain + GstringHostName;
+  table<ipaddress> tableAddresses;
+  tableAddresses = GetIPv4Address(stringLookup);
+  return 8;
+}
+
+static bool foo()
+{
+  table<sdword> asdw;
+  sdword sdw;
+  udword udw;
+  double df;
+
+  asdw[1] = udw + asdw[1] + df;
+  asdw[1] = sdw;
+  udw = (udword)asdw[1];
+
+  return true;
+}
+

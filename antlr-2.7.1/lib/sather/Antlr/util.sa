@@ -1,0 +1,42 @@
+class ANTLR_UTIL is
+   
+   strip_front_back( src, head, tail : STR ) : STR is
+
+      h : INT := src.search( head );
+      t : INT := search_backwards( src, tail );
+      
+      if ( h = -1 or t = -1 ) then 
+	 return src;
+      end;
+      
+      beg : INT := h + head.size;
+      num : INT := t - beg;
+      return src.substring( beg , num );
+	 
+   end;
+   
+   -- search backwards by finding the repeatedly searching forwards.
+   -- OK, so it isn't the most efficient algorithm, but we'll live with it
+   -- for now.
+   search_backwards( src, s : STR ) : INT is 
+
+      if ( s.size = 0 ) then
+	 return src.size;
+      end;
+	       
+      from  : INT := 0;
+      i     : INT := -1;
+      index : INT := -1;
+
+      loop
+	 i := src.search( s , from );
+	 if ( i = -1 ) then
+	    break!;
+	 end;
+	 index := i;
+	 from := index + s.size;
+      end;
+      return index;
+   end;
+         
+end;

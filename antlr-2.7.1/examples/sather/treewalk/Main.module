@@ -1,0 +1,9 @@
+-o main main.sa
+
+../../../lib/sather/Library.module
+
+-has LANG_LEXER.sa               LANG_LEXER
+-has LANG_PARSER_TOKENTYPES.sa   LANG_PARSER_TOKENTYPES
+-has LANG_PARSER.sa              LANG_PARSER
+-has LANG_WALKER.sa              LANG_WALKER
+

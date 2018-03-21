@@ -1,0 +1,42 @@
+class MAIN is
+   main ( args : ARRAY{STR} ) is
+
+      if ( args.size < 2 ) then
+	 #OUT + "usage " + args[0] + " <filename>\n";
+	 return;
+      end;
+	 
+      f : IFSTREAM := IFSTREAM::open_for_read( args[1] );
+
+      if ( void(f) ) then
+	 #OUT + "file \"" + args[1] + "\" not found\n";
+	 return;
+      end;
+
+      protect
+	 -- Create a scanner that reads from the input stream passed to us
+	 lexer ::= #JAVA_LEXER{ANTLR_COMMON_TOKEN}( f );
+	 lexer.file_name( args[1] );
+	 
+	 -- Create a parser that reads from the scanner
+	 parser ::= #JAVA_RECOGNIZER{ANTLR_COMMON_TOKEN,ANTLR_COMMON_AST}( lexer );
+	 parser.file_name( args[1] );
+	 
+	 -- start parsing at the compilationUnit rule
+	 parser.compilationUnit;
+	 
+	 t : ANTLR_COMMON_AST := parser.ast;
+
+	 #OUT + t.str_list + "\n";
+	 
+	 -- walk the resulting AST with a tree parser
+	 tparser ::= #JAVA_TREE_PARSER{ANTLR_COMMON_AST};
+	 tparser.compilationUnit(t);
+	 
+      when $ANTLR_RECOGNITION_EXCEPTION then
+	 #ERR + "exception: " + exception.str + "\n";	 
+      end;
+      
+   end;
+end;
+

@@ -1,0 +1,9 @@
+-o main main.sa
+
+../../../lib/sather/Library.module
+
+-has CALC_LEXER.sa               CALC_LEXER
+-has CALC_PARSER_TOKENTYPES.sa   CALC_PARSER_TOKENTYPES
+-has CALC_PARSER.sa              CALC_PARSER                 
+-has CALC_TREE_WALKER.sa         CALC_TREE_WALKER
+-has conv.sa                     CONV                        
