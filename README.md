@@ -1,6 +1,6 @@
 # Z-Language语言、编译器和字节码虚拟机
 
-该项目是本人在2000年时的一个作品：**一种健壮的、高速的强类型嵌入式语言，以及提供了该语言的`编译器`和`字节码虚拟机`实现。**
+该项目是本人在2000年时的一个作品：**一种健壮的、高速的强类型嵌入式语言，以及提供了该语言的`编译器`和`字节码虚拟机`实现**。
 
 ## Z-Language语言简介
 
@@ -28,7 +28,7 @@ Z-Language语言是我在2000年创业时为当时的创业产品NetDefender-1 I
 
 ## Z-Language语言的语法规范
 
-Z-Language借鉴了C语言的语法结构，保留了C语言的灵活性和强大功能，但是去除了C语言中的不安全因素，例如：指针、数组、显式内存申请、释放，等等。只要你会编写C代码，你就会编写Z-Language代码。
+Z-Language借鉴了C语言的语法结构，保留了C语言的灵活性和强大功能，但是去除了C语言中的不安全因素，例如：指针、数组、显式内存申请、释放，等等。**只要你会编写C代码，你就会编写Z-Language代码**。
 
 Z-Language语言的语法规范，请参见[Z-Language语言语法规范白皮书](/doc/Z-Language语言语法规范白皮书.pdf)。
 
@@ -120,7 +120,7 @@ $ vagrant ssh
 
 ### 在你的C++应用程序代码里使用`zvm`
 
-具体如何在你的C++程序代码里嵌入和使用`zvm`、以及如何用C++编写自己扩展的Z-Language语言系统函数等用法，可参考`~/zlang-zvm/zdk/zls/zvm/demo1.cpp`代码的实现。
+具体如何在你的C++程序代码里嵌入和使用`zvm`、以及如何用C++编写自己扩展的Z-Language语言系统函数等用法，可参考[`~/zlang-zvm/zdk/zls/zvm/demo1.cpp`](https://github.com/AlbertZheng/zlang-zvm/blob/master/zdk/zls/zvm/demo1.cpp)代码的实现。
 
 <br>
 
