@@ -1,4 +1,4 @@
-# Z-Language语言、`编译器`和`字节码虚拟机`
+# Z-Language语言、编译器和字节码虚拟机
 
 该项目是本人在2000年时的一个作品：**一种健壮的、高速的强类型嵌入式语言，以及提供了该语言的`编译器`和`字节码虚拟机`实现。**
 
@@ -8,7 +8,7 @@ Z-Language语言是我在2000年创业时为当时的创业产品NetDefender-1 I
 
 2000年彼时的Lua语言还很简单、且是运行时动态解析的弱类型脚本语言，满足不了IDS系统对网络数据流内容进行高速检测的要求，因此我决定自己设计一种健壮的、高速的强类型嵌入式语言，其具有如下特征：
 
-1. Z-Language在2000年时已经采用了字节码和虚拟机技术（类似`JVM`），作者自己设计了一套字节码和实现了字节码虚拟机，因此能够实现真正的“一次编译，跨平台高速运行”。
+1. Z-Language在2000年时已经采用了字节码和虚拟机技术（类似`JVM`），我自己设计了一套字节码和实现了字节码虚拟机，因此能够实现真正的“一次编译，跨平台高速运行”。
 
 2. Z-Language采用了“沙盒”安全保护技术，因此可以保护IDS系统，避免错误编写的Z-Language程序摧毁IDS系统，或者消耗掉系统资源，例如：死循环检测、内存申请限制、函数递归层数限制等技术。
 
@@ -30,7 +30,13 @@ Z-Language语言是我在2000年创业时为当时的创业产品NetDefender-1 I
 
 Z-Language借鉴了C语言的语法结构，保留了C语言的灵活性和强大功能，但是去除了C语言中的不安全因素，例如：指针、数组、显式内存申请、释放，等等。只要你会编写C代码，你就会编写Z-Language代码。
 
-Z-Language语言的语法规范，请参见[Z-Language语言技术白皮书](doc/Z-Language语言技术白皮书.pdf)。
+Z-Language语言的语法规范，请参见[Z-Language语言语法规范白皮书](/doc/Z-Language语言语法规范白皮书.pdf)。
+
+<br>
+
+## Z-Language`字节码虚拟机`设计
+
+直接阅读源代码[InstructionCode.hpp里的注释](https://github.com/AlbertZheng/zlang-zvm/blob/master/zdk/zls/zvm/InstructionCode.hpp)，以及`~/zlang-zvm/zdk/zls/zvm/`下的源代码。
 
 <br>
 
@@ -40,7 +46,7 @@ Z-Language语言的`编译器`（`词法分析器`、`语法分析器`、`语义
 
 编译构建Z-Language语言的`编译器`和`虚拟机`需要采用`gcc/g++-3.0.1`（注：这是2000年时可用的gcc/g++最新版本），需要使用到[**ANTLR-2.7.1**](http://www.antlr2.org)；运行操作系统环境为`FreeBSD 4.4`或`Debian 3`。
 
-Z-Language语言的`编译器`和`字节码虚拟机`的源代码应该是能够被移植到现在最新版本的gcc/g++和CentOS操作系统的，由于我现在的精力实在有限，未能有时间去实现，欢迎对编译器技术感兴趣的同学fork本开源项目进行PR和移植。
+Z-Language语言的`编译器`和`字节码虚拟机`的源代码应该是能够被移植到现在最新版本的`gcc/g++`和`CentOS`操作系统的，由于我现在的精力实在有限，未能有时间去实现，欢迎对编译器技术感兴趣的同学`fork`本开源项目进行`PR`和移植。
 
 为了方便体验Z-Language语言，我特地构建了[**一个开箱即用的`FreeBSD 4.4 i386`的vagrant box**](https://github.com/AlbertZheng/vagrant-freebsd-4.4-i386-minimal)，该vagrant box已经内置了Z-Language语言的源代码和编译、运行所需的一切工具链依赖。因此最简单的体验方法就是直接使用这个vagrant box在你的Mac或PC上启动一个FreeBSD虚拟机环境。
 
@@ -112,7 +118,9 @@ $ vagrant ssh
 # ./demo1
 ```
 
-3. 具体如何在你的C++程序代码里嵌入和使用`zvm`、以及如何用C++编写自己扩展的Z-Language语言系统函数等用法，可参考`~/zlang-zvm/zdk/zls/zvm/demo1.cpp`代码的实现。
+### 在你的C++应用程序代码里使用`zvm`
+
+具体如何在你的C++程序代码里嵌入和使用`zvm`、以及如何用C++编写自己扩展的Z-Language语言系统函数等用法，可参考`~/zlang-zvm/zdk/zls/zvm/demo1.cpp`代码的实现。
 
 <br>
 
@@ -134,12 +142,6 @@ Usage: zlangc [OPTIONS]... [FILES]...
               --trace-symbol-table   Trace symbol table generated
               --trace-code           Trace byte code generated
 ```
-
-<br>
-
-## Z-Language`字节码虚拟机`设计
-
-直接阅读源代码[InstructionCode.hpp里的注释]()，以及`~/zlang-zvm/zdk/zls/zvm/`下的源代码。
 
 <br>
 
