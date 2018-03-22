@@ -36,7 +36,7 @@ Z-Language语言的语法规范，请参见[Z-Language语言语法规范白皮�
 
 ## Z-Language`字节码虚拟机`设计
 
-直接阅读源代码[InstructionCode.hpp里的注释](https://github.com/AlbertZheng/zlang-zvm/blob/master/zdk/zls/zvm/InstructionCode.hpp)，以及`~/zlang-zvm/zdk/zls/zvm/`下的源代码。
+直接阅读源代码[InstructionCode.hpp里的注释](https://github.com/AlbertZheng/zlang-zvm/blob/master/zdk/zls/zvm/InstructionCode.hpp)，以及[`~/zlang-zvm/zdk/zls/zvm/`](https://github.com/AlbertZheng/zlang-zvm/tree/master/zdk/zls/zvm)下的源代码。
 
 <br>
 
@@ -106,10 +106,10 @@ $ vagrant ssh
 1. 用`zlangc`（make install安装为`/usr/local/bin/zlangc`）去编译用Z-Language语言编写的几个测试/演示代码文件（`~/zlang-zvm/zdk/zls/zlang/data`目录下`*.z`），将会在`~/zlang-zvm/zdk/zls/zlang/data`下产生相应的目标文件`*.zo`：
 
 ```bash
-# cd ~/zlang-zvm/zdk/zls/zlang/data
-# /usr/local/bin/zlangc demo1.z
-# /usr/local/bin/zlangc demo2.z
-# /usr/local/bin/zlangc t5.z
+# cd /root/zlang-zvm/zdk/zls/zlang/data
+# zlangc demo1.z
+# zlangc demo2.z
+# zlangc t5.z
 ```
 
 2. 然后用`~/zlang-zvm/zdk/zls/zvm`目录下的一个演示程序`demo1`来体验Z-Language语言`字节码虚拟机`是如何执行上面编译产生的3个目标文件`demo1.zo`、`demo2.zo`、`t5.zo`：
@@ -141,6 +141,28 @@ Usage: zlangc [OPTIONS]... [FILES]...
               --trace-ast            Trace AST generated
               --trace-symbol-table   Trace symbol table generated
               --trace-code           Trace byte code generated
+```
+
+<br>
+
+## 如何从头开始编译本项目的源代码
+
+如果你想编译本项目的源代码，先`vagrant ssh`登录freebsd box后，步骤如下：
+
+### 编译和安装`antlr-2.7.1`
+```bash
+# cd ~/zlang-zvm/antlr-2.7.1/lib/cpp
+# ./configure --prefix=/usr/local/antlr-2.7.1
+# make
+# make install
+```
+
+### 编译和安装`zlang编译器`和`zlang虚拟机`
+```bash
+# cd ~/zlang-zvm/zdk
+# ./configure
+# ./make
+# ./make install
 ```
 
 <br>
