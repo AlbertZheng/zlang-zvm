@@ -157,7 +157,7 @@ Usage: zlangc [OPTIONS]... [FILES]...
 # make install
 ```
 
-### 编译和安装`zlang编译器`和`zlang虚拟机`
+### 编译和安装Z-Language语言的`编译器`
 ```bash
 # cd ~/zlang-zvm/zdk
 # ./configure
