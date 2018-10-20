@@ -1,64 +1,70 @@
-# Z-Language语言、编译器和字节码虚拟机
+# What is the project?
 
-该项目是本人在2000年时的一个作品：**一种健壮的、高速的强类型嵌入式语言，以及提供了该语言的`编译器`和`字节码虚拟机`实现**。
+**If you  know Chinese, I suggest you to read [the Chinese README.md](/README-zh.md).**
 
-## Z-Language语言简介
+This project is one of my private work started in 2000: A robust, flexible, high-speed strongly-typed embedded language for C++ application, and also implements the Lexical, Syntax, Semantic Compiler, and the Bytecode Virtual Machine.
 
-Z-Language语言是我在2000年创业时为当时的创业产品NetDefender-1 IDS系统（黑客入侵检测系统）特别设计的一种强类型嵌入式编程语言，用于灵活编写和扩展IDS系统的入侵检测规则。
+## The introduction of Z-Language, its compilers and Bytecode Virtual Machine
 
-2000年彼时的Lua语言还很简单、且是运行时动态解析的弱类型脚本语言，满足不了IDS系统对网络数据流内容进行高速检测的要求，因此我决定自己设计一种健壮的、高速的强类型嵌入式语言，其具有如下特征：
+Z-language is a strongly-typed embedded programming language that I specially designed for the NetDefender-1 IDS (Intrusion Detection System) when I started my business in 2000. It was used to flexibly write and extend the intrusion detection rules for IDS.
 
-1. Z-Language在2000年时已经采用了字节码和虚拟机技术（类似`JVM`），我自己设计了一套字节码和实现了字节码虚拟机，因此能够实现真正的“一次编译，跨平台高速运行”。
+In 2000, the ```Lua``` language was still simple, and it was a weakly-typed script language that was dynamically parsed at runtime, which could not meet the requirements of IDS system for high-speed detection of network data flow content, so I decided to design a robust, high-speed strong-typed embedded languages with the following features:
 
-2. Z-Language采用了“沙盒”安全保护技术，因此可以保护IDS系统，避免错误编写的Z-Language程序摧毁IDS系统，或者消耗掉系统资源，例如：死循环检测、内存申请限制、函数递归层数限制等技术。
+1. Z-Language had adopted the Bytecode and Bytecode Virtual Machine technology (similar to ```JVM```) in 2000, and I designed a set of Bytecode instructment set and then implemented the Bytecode Virtual Machine, so Z-Language achieved the characteristic ```once compiled, run across platforms``` similar to ```Java```.
 
-3. Z-Language提供了一套高效率的C++嵌入式调用接口，因此能够很容易地将Z-Language集成到作者的NetDefender-1 IDS系统中的任何网络协议处理层里；
+2. The Bytecode Virtual Machine can avoid the error-writing or malicious Z-Language programs to damage IDS systems, or consume the system resources, such as dead-loop detection, memory request limits, function recursive layer limit and other techniques.
 
-4. Z-Language借鉴了C语言的语法结构，保留了C语言的灵活性和强大功能，但是去除了C语言中的不安全因素，例如：指针、数组、显式内存申请、释放，等等。
+3. Z-Language provides a set of efficient invoking interfaces for embedding in  C++ programs, so it is easy to integrate Z-Language into any network protocol processing layer in any C++ applicaiton, such as my NetDefender-1 IDS system.
 
-5. Z-Language提供了多种丰富的基本数据类型和高级数据类型，即bool、byte、sdword、udword、sqword、uqword、double、string、rope、ipaddress、pport、table等数据类型，特别其中ipaddress、pport是专门设计的网络数据类型，rope是一种高效率的串数据类型，而table是一种比数组更灵活、更安全的关联表数据类型。
+4. Z-Language borrows the syntax structure of C language, and retains the flexibility and powerful features of C language, but removes the insecurity factors in C language, such as pointer, array, explicit memory allocating, releasing, and so on.
 
-6. Z-Language支持多种高级编程语言才具有的特征，例如：变量类型cast、函数递归、for和while循环控制、引用参数、引用变量、AND和OR逻辑操作短路、C/C++风格的宏预处理，等等。
+5. Z-Language provides a variety of basic and advanced data types, such as ```bool```, ```byte```, ```sdword```, ```udword```, ```sqword```, ```uqword```, ```double```, ```string```, ```rope```, ```ipaddress```, ```pport```, ```table```, in which ```ipaddress```, ```pport``` is a specially designed network data type, ```rope``` is a highly efficient string data type, and ```table``` is a secure association table data type, more flexible than an array.
 
-7. Z-Language支持将变量与NetDefender-1 IDS系统中正监测的任何TCP Session进行打结，因此可以让用户在Z-Language程序中轻松地跟踪某个TCP Session的状态变化。
+6. Z-Language supports the characteristics of many advanced programming languages, such as ```variable type cast```, ```function recursion```, ```for and while loop control```, ```reference parameter```, ```reference variable```, ```AND and OR logic operation short circuit```, ```C/C++ style macro preprocessing```, and so on.
 
-8. Z-Language提供了一套简洁的用于编写、扩展系统库函数的C++接口，在Z-Language代码里能够像原生代码那样调用新扩展的系统库函数。
+7. Z-Language supports to tie its variables to any TCP session that is being monitored in the NetDefender-1 IDS system, so users can easily track the state of a TCP session in a Z-Language program.
 
-<br>
-
-## Z-Language语言的语法规范
-
-Z-Language借鉴了C语言的语法结构，保留了C语言的灵活性和强大功能，但是去除了C语言中的不安全因素，例如：指针、数组、显式内存申请、释放，等等。**只要你会编写C代码，你就会编写Z-Language代码**。
-
-Z-Language语言的语法规范，请参见[Z-Language语言语法规范白皮书](/doc/Z-Language语言语法规范白皮书.pdf)。
+8. Z-Language provides a set of simple C++ interface for writing and extending its system library. In Z-Language code, the newly extended system library functions can be called in the same way as if its native code.
 
 <br>
 
-## Z-Language`字节码虚拟机`设计
+## Syntax specification of Z-Language
 
-直接阅读源代码[InstructionCode.hpp里的注释](https://github.com/AlbertZheng/zlang-zvm/blob/master/zdk/zls/zvm/InstructionCode.hpp)，以及[`~/zlang-zvm/zdk/zls/zvm/`](https://github.com/AlbertZheng/zlang-zvm/tree/master/zdk/zls/zvm)下的源代码。
+Z-Language borrows the syntax structure of ```C``` language, so **if you can write C codes, you can write Z-Language codes too.**
 
-<br>
-
-## 快速体验Z-Language语言
-
-Z-Language语言的`编译器`（`词法分析器`、`语法分析器`、`语义分析器`、`字节码生成器`）和`字节码虚拟机`采用跨平台的**C++**和**STL库**编写实现，Z-Language语言的`编译器`采用自上而下（top-down）的递归下降[**LL(*)算法**](https://en.wikipedia.org/wiki/LL_parser)，感谢[**ANTLR**](http://www.antlr.org/)这套开源工具，使得我们可以写出优雅的lexer/parser代码。
-
-编译构建Z-Language语言的`编译器`和`虚拟机`需要采用`gcc/g++-3.0.1`（注：这是2000年时可用的gcc/g++最新版本），需要使用到[**ANTLR-2.7.1**](http://www.antlr2.org)；运行操作系统环境为`FreeBSD 4.4`或`Debian 3`。
-
-Z-Language语言的`编译器`和`字节码虚拟机`的源代码应该是能够被移植到现在最新版本的`gcc/g++`和`CentOS`操作系统的，由于我现在的精力实在有限，未能有时间去实现，欢迎对编译器技术感兴趣的同学`fork`本开源项目进行`PR`和移植。
-
-为了方便体验Z-Language语言，我特地构建了[**一个开箱即用的`FreeBSD 4.4 i386`的vagrant box**](https://github.com/AlbertZheng/vagrant-freebsd-4.4-i386-minimal)，该vagrant box已经内置了Z-Language语言的源代码和编译、运行所需的一切工具链依赖。因此最简单的体验方法就是直接使用这个vagrant box在你的Mac或PC上启动一个FreeBSD虚拟机环境。
+Please refer to [the technical white paper of Z-Language syntax specification](/doc/Z-Language语言语法规范白皮书.pdf). Sorry, currently there is just a Chinese version:( since I hadn't enough free time to translate it into English version.
 
 <br>
 
-### 部署一个`FreeBSD 4.4 i386`虚拟机环境
+## Design of Bytecode Virtual Machine of Z-Language
 
-前提条件：假设你的macOS已经安装了，
-1. VirtualBox；
-2. vagrant 2.0.1或之前的版本（注意：不要安装vagrant 2.0.2或以上新版本，这些版本有1个OpenSSL底层依赖的issue如下）。
-    > /opt/vagrant/embedded/gems/2.0.3/gems/net-ssh-4.2.0/lib/net/ssh/transport/openssl.rb:112:in `ssh_do_verify':
-    > uninitialized constant OpenSSL::Digest::DSS1 (NameError)
+As you know, the source codes are the best document to deeply understand a product, please directly read the source codes for knowing the design of Bytecode Virtual Machine of Z-Language.
+
+1. The codes and comments in [InstructionCode.hpp](https://github.com/AlbertZheng/zlang-zvm/blob/master/zdk/zls/zvm/InstructionCode.hpp);
+2. The codes in the directory [`~/zlang-zvm/zdk/zls/zvm/`](https://github.com/AlbertZheng/zlang-zvm/tree/master/zdk/zls/zvm).
+
+<br>
+
+## Quickly play the Z-Language
+
+Z-Language's ```compiler``` (```lexical parser```, ```semantic parser```, ```bytecode generator```) and ```Bytecode Virtual Machine``` were implemented by using cross-platform  ```C++```codes and ```STL``` library.
+
+Z-Language's ```compiler``` adopts the top-down recursive descent [**LL(*) algorithm**](https://en.wikipedia.org/wiki/LL_parser), and thanks to the [**ANTLR**](http://www.antlr.org/), so that I can write elegant codes for lexer and parser implementation. 
+
+To build the compiler and virtual machine by yourself, you will need to use the ```gcc/g++-3.0.1``` (note: this was the latest version of gcc/g++ available in 2000.), and [ANTLR-2.7.1](http://www.antlr2.org). The OS for runtime is ```FreeBSD 4.4``` or ```Debian 3```.
+
+For your convenience, I had built a special out-of-the-box [FreeBSD 4.4 i386 vagrant box]((https://github.com/AlbertZheng/vagrant-freebsd-4.4-i386-minimal)) for playing the Z-Language. This vagrant box had installed the GNU toolchain, cloned the source codes of Z-Language, and built the compiler, the Bytecode Virtual Machine of Z-Language. So the easiest way to experience Z-Language is to directly use this vagrant box to start a FreeBSD virtual environment on your Mac or PC.
+
+<br>
+
+### How to deploy the ```FreeBSD 4.4 i386 vagrant box```
+
+Prerequisite：You have installed below software on your macOS.
+
+1. ```VirtualBox```;
+2. ```vagrant 2.0.1``` or lower versions (note：DON'T use ```vagrant 2.0.2``` or above versions because they have an issue relating to OpenSSL as below).
+> /opt/vagrant/embedded/gems/2.0.3/gems/net-ssh-4.2.0/lib/net/ssh/transport/openssl.rb:112:in `ssh_do_verify':
+> uninitialized constant OpenSSL::Digest::DSS1 (NameError)
 
 ```bash
 $ git clone git@github.com:AlbertZheng/vagrant-freebsd-4.4-i386-minimal.git
@@ -83,7 +89,7 @@ Bringing machine 'default' up with 'virtualbox' provider...
     default: Warning: Remote connection disconnect. Retrying...
     default: Warning: Connection reset. Retrying...
 
->>> 如下ssh报错忽略它：
+>>> Please ignore below error of ssh:
 
 The configured shell (config.ssh.shell) is invalid and unable
 to properly execute commands. The most common cause for this is
@@ -92,18 +98,18 @@ you're using the full path to the shell and that the shell is
 executable by the SSH user.
 ```
 
-现在你可以以`root`身份ssh登录到本开源项目的专用freebsd box里了：
+Now you can ssh into this freebsd box with ```root```:
 ```bash
 $ vagrant ssh
 ```
 
 <br>
 
-### 体验Z-Language语言的`编译器`（简称`zlangc`）和`字节码虚拟机`（简称`zvm`）
+### Play the compiler (```zlangc```) and Bytecode Virtual Machine (```zvm```) of Z-Language
 
-现在你可愉快地play了：
+Now you can play:
 
-1. 用`zlangc`（make install安装为`/usr/local/bin/zlangc`）去编译用Z-Language语言编写的几个测试/演示代码文件（`~/zlang-zvm/zdk/zls/zlang/data`目录下`*.z`），将会在`~/zlang-zvm/zdk/zls/zlang/data`下产生相应的目标文件`*.zo`：
+1. Using ```zlangc``` (installed as ```/usr/local/bin/zlangc```) to compile several demo and testing Z-Language codes (i.e. `*.z` files in the directory ```~/zlang-zvm/zdk/zls/zlang/data```), and the compiler will generate the output files ```*.zo``` in the directory ```~/zlang-zvm/zdk/zls/zlang/data```:
 
 ```bash
 # cd /root/zlang-zvm/zdk/zls/zlang/data
@@ -112,21 +118,22 @@ $ vagrant ssh
 # zlangc t5.z
 ```
 
-2. 然后用`~/zlang-zvm/zdk/zls/zvm`目录下的一个演示程序`demo1`来体验Z-Language语言`字节码虚拟机`是如何执行上面编译产生的3个目标文件`demo1.zo`、`demo2.zo`、`t5.zo`：
+2. Then using the executable file ```demo1``` of  ```demo1.cpp``` in the directory ```~/zlang-zvm/zdk/zls/zvm``` to experience how the ```zvm``` will execute the above three oebject files ```demo1.zo```, ```demo2.zo```, ```t5.zo```：
+
 ```bash
 # cd ../../zvm
 # ./demo1
 ```
 
-### 在你的C++应用程序代码里使用`zvm`
+### How to embed and use ```zvm``` in your C++ application ?
 
-具体如何在你的C++程序代码里嵌入和使用`zvm`、以及如何用C++编写自己扩展的Z-Language语言系统函数等用法，可参考[`~/zlang-zvm/zdk/zls/zvm/demo1.cpp`](https://github.com/AlbertZheng/zlang-zvm/blob/master/zdk/zls/zvm/demo1.cpp)代码的实现。
+Please refer to the source codes of [/zlang-zvm/zdk/zls/zvm/demo1.cpp](https://github.com/AlbertZheng/zlang-zvm/blob/master/zdk/zls/zvm/demo1.cpp) for how to embed and use the Bytecode Virtual Machine ```zvm``` in your C++ application? and how to write new functions to extend the system library of Z-Language? 
 
 <br>
 
-## Z-Language`编译器`命令行参数
+## Command usage of the compiler ```zlangc```
 
-`zlangc`提供的命令行参数如下：
+Command usage:
 ```bash
 # /usr/local/bin/zlangc --help
 zlangc 1.0
@@ -145,11 +152,11 @@ Usage: zlangc [OPTIONS]... [FILES]...
 
 <br>
 
-## 如何从头开始编译本项目的源代码
+## How to compile the source codes of this project?
 
-如果你想编译本项目的源代码，先`vagrant ssh`登录freebsd box后，步骤如下：
+If you want to compile the source codes of this project to build the ```zlangc``` and ```zvm```, firstly ```vagrant ssh``` to login the freebsd box, then perform as the following steps:
 
-### 编译和安装`antlr-2.7.1`
+### Build and install ```antlr-2.7.1```
 ```bash
 # cd ~/zlang-zvm/antlr-2.7.1/lib/cpp
 # ./configure --prefix=/usr/local/antlr-2.7.1
@@ -157,7 +164,7 @@ Usage: zlangc [OPTIONS]... [FILES]...
 # make install
 ```
 
-### 编译和安装`zlang编译器`和`zlang虚拟机`
+### Build and install ```zlangc``` and ```zvm```
 ```bash
 # cd ~/zlang-zvm/zdk
 # ./configure
@@ -169,6 +176,6 @@ Usage: zlangc [OPTIONS]... [FILES]...
 
 ## License
 
-Copyright (C) 2000-2018 Albert Zheng, 郑立松
+Copyright (C) 2000-2018 Lisong Zheng, 郑立松
 
 The binaries and source code of this Project can be used according to the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
