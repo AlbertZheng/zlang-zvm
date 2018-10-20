@@ -1,16 +1,16 @@
 # What is the project?
 
-**If you know Chinese, I suggest you to read the [Chinese README.md](/README-zh.md).**
+**If you know Chinese, I suggest you to read the [Chinese README.md](/README-zh_CN.md).**
 
-This project is one of my private work started in 2000: A robust, flexible, high-speed strongly-typed embedded language for C++ application, and also implements the Lexical, Syntax, Semantic Compiler, and the Bytecode Virtual Machine.
+This project is one of my private work started in 2001: A robust, flexible, high-speed strongly-typed embedded language for C++ application, and also implements the Lexical, Syntax, Semantic Compiler, and the Bytecode Virtual Machine.
 
-## The introduction of Z-Language, its compilers and Bytecode Virtual Machine
+## Introduction of Z-Language, its compilers and Bytecode Virtual Machine
 
 Z-language is a strongly-typed embedded programming language that I specially designed for the NetDefender-1 IDS (Intrusion Detection System) when I started my business in 2000. It was used to flexibly write and extend the intrusion detection rules for IDS.
 
-In 2000, the ```Lua``` language was still simple, and it was a weakly-typed script language that was dynamically parsed at runtime, which could not meet the requirements of IDS system for high-speed detection of network data flow content, so I decided to design a robust, high-speed strong-typed embedded languages with the following features:
+In 2001, the ```Lua``` language was still simple, and it was a weakly-typed script language that was dynamically parsed at runtime, which could not meet the requirements of IDS system for high-speed detection of network data flow content, so I decided to design a robust, high-speed strong-typed embedded languages with the following features:
 
-1. Z-Language had adopted the Bytecode and Bytecode Virtual Machine technology (similar to ```JVM```) in 2000, and I designed a set of Bytecode instructment set and then implemented the Bytecode Virtual Machine, so Z-Language achieved the characteristic ```once compiled, run across platforms``` similar to ```Java```.
+1. Z-Language had already adopted the Bytecode and Bytecode Virtual Machine technology (similar to ```JVM```) in 2001. I designed a set of Bytecode instructment set and implemented the Bytecode Virtual Machine, so Z-Language achieved the characteristic ```once compiled, run across platforms``` similar to ```Java```.
 
 2. The Bytecode Virtual Machine can avoid the error-writing or malicious Z-Language programs to damage IDS systems, or consume the system resources, such as dead-loop detection, memory request limits, function recursive layer limit and other techniques.
 
@@ -32,7 +32,7 @@ In 2000, the ```Lua``` language was still simple, and it was a weakly-typed scri
 
 Z-Language borrows the syntax structure of ```C``` language, so **if you can write C codes, you can write Z-Language codes too.**
 
-Please refer to [the technical white paper of Z-Language syntax specification](/doc/Z-Language语言语法规范白皮书.pdf). Sorry, currently there is just a Chinese version:(.
+Please refer to [the technical white paper of Z-Language syntax specification](/doc/Z-Language语言语法规范白皮书.pdf). Sorry, currently there is just a Chinese version :(.
 
 <br>
 
@@ -51,7 +51,7 @@ Z-Language's ```compiler``` (```lexical parser```, ```semantic parser```, ```byt
 
 Z-Language's ```compiler``` adopts the top-down recursive descent [**LL(*) algorithm**](https://en.wikipedia.org/wiki/LL_parser), and thanks to the [**ANTLR**](http://www.antlr.org/), so that I can write elegant codes for lexer and parser implementation. 
 
-To build the compiler and virtual machine by yourself, you will need to use the ```gcc/g++-3.0.1``` (note: this was the latest version of gcc/g++ available in 2000.), and [ANTLR-2.7.1](http://www.antlr2.org). The OS for runtime is ```FreeBSD 4.4``` or ```Debian 3```.
+To build the compiler and virtual machine by yourself, you will need to use the ```gcc/g++-3.0.1``` (note: this was the latest version of gcc/g++ available in 2001.), and [ANTLR-2.7.1](http://www.antlr2.org). The OS for runtime is ```FreeBSD 4.4``` or ```Debian 3```.
 
 For your convenience, I had built a special out-of-the-box [FreeBSD 4.4 i386 vagrant box]((https://github.com/AlbertZheng/vagrant-freebsd-4.4-i386-minimal)) for playing the Z-Language. This vagrant box had installed the GNU toolchain, cloned the source codes of Z-Language, and built the compiler, the Bytecode Virtual Machine of Z-Language. So the easiest way to experience Z-Language is to directly use this vagrant box to start a FreeBSD virtual environment on your Mac or PC.
 
@@ -59,7 +59,7 @@ For your convenience, I had built a special out-of-the-box [FreeBSD 4.4 i386 vag
 
 ### How to deploy the ```FreeBSD 4.4 i386 vagrant box```
 
-Prerequisite：You have installed below software on your macOS.
+Prerequisite：You have installed below softwares on your macOS.
 
 1. ```VirtualBox```;
 2. ```vagrant 2.0.1``` or lower versions (note：DON'T use ```vagrant 2.0.2``` or above versions because they have an issue relating to OpenSSL as below).
@@ -171,10 +171,11 @@ If you want to compile the source codes of this project to build the ```zlangc``
 # ./make
 # ./make install
 ```
+
 <br>
 
 ## License
 
-Copyright (C) 2000-2018 Lisong Zheng, 郑立松
+Copyright (C) 2001-2018 Lisong Zheng, 郑立松
 
 The binaries and source code of this Project can be used according to the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
