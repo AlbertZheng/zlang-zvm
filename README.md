@@ -1,6 +1,6 @@
 # What is the project?
 
-**If you  know Chinese, I suggest you to read [the Chinese README.md](/README-zh.md).**
+**If you know Chinese, I suggest you to read the [Chinese README.md](/README-zh.md).**
 
 This project is one of my private work started in 2000: A robust, flexible, high-speed strongly-typed embedded language for C++ application, and also implements the Lexical, Syntax, Semantic Compiler, and the Bytecode Virtual Machine.
 
@@ -32,7 +32,7 @@ In 2000, the ```Lua``` language was still simple, and it was a weakly-typed scri
 
 Z-Language borrows the syntax structure of ```C``` language, so **if you can write C codes, you can write Z-Language codes too.**
 
-Please refer to [the technical white paper of Z-Language syntax specification](/doc/Z-Language语言语法规范白皮书.pdf). Sorry, currently there is just a Chinese version:( since I hadn't enough free time to translate it into English version.
+Please refer to [the technical white paper of Z-Language syntax specification](/doc/Z-Language语言语法规范白皮书.pdf). Sorry, currently there is just a Chinese version:(.
 
 <br>
 
@@ -40,8 +40,8 @@ Please refer to [the technical white paper of Z-Language syntax specification](/
 
 As you know, the source codes are the best document to deeply understand a product, please directly read the source codes for knowing the design of Bytecode Virtual Machine of Z-Language.
 
-1. The codes and comments in [InstructionCode.hpp](https://github.com/AlbertZheng/zlang-zvm/blob/master/zdk/zls/zvm/InstructionCode.hpp);
-2. The codes in the directory [`~/zlang-zvm/zdk/zls/zvm/`](https://github.com/AlbertZheng/zlang-zvm/tree/master/zdk/zls/zvm).
+1. The source codes and comments in [InstructionCode.hpp](https://github.com/AlbertZheng/zlang-zvm/blob/master/zdk/zls/zvm/InstructionCode.hpp);
+2. The source codes in the directory [```~/zlang-zvm/zdk/zls/zvm/```](https://github.com/AlbertZheng/zlang-zvm/tree/master/zdk/zls/zvm).
 
 <br>
 
@@ -109,7 +109,7 @@ $ vagrant ssh
 
 Now you can play:
 
-1. Using ```zlangc``` (installed as ```/usr/local/bin/zlangc```) to compile several demo and testing Z-Language codes (i.e. `*.z` files in the directory ```~/zlang-zvm/zdk/zls/zlang/data```), and the compiler will generate the output files ```*.zo``` in the directory ```~/zlang-zvm/zdk/zls/zlang/data```:
+1. Using ```zlangc``` (installed as ```/usr/local/bin/zlangc```) to compile several demo and testing Z-Language codes (i.e. ```*.z``` files in the directory ```~/zlang-zvm/zdk/zls/zlang/data```), and the compiler will generate the output files ```*.zo``` in the directory ```~/zlang-zvm/zdk/zls/zlang/data```:
 
 ```bash
 # cd /root/zlang-zvm/zdk/zls/zlang/data
@@ -154,7 +154,7 @@ Usage: zlangc [OPTIONS]... [FILES]...
 
 ## How to compile the source codes of this project?
 
-If you want to compile the source codes of this project to build the ```zlangc``` and ```zvm```, firstly ```vagrant ssh``` to login the freebsd box, then perform as the following steps:
+If you want to compile the source codes of this project to build the ```zlangc``` and ```zvm```, firstly ```vagrant ssh``` to login the freebsd box, then issue commands as the following steps:
 
 ### Build and install ```antlr-2.7.1```
 ```bash
@@ -171,7 +171,6 @@ If you want to compile the source codes of this project to build the ```zlangc``
 # ./make
 # ./make install
 ```
-
 <br>
 
 ## License
