@@ -1,6 +1,6 @@
 # What is the project?
 
-**If you know Chinese, please read the [Chinese README.md](/README-zh_CN.md).**
+English | [简体中文](/README-zh_CN.md)
 
 This project is one of my private work started in 2001: A robust, flexible, high-speed strongly-typed embedded language for C++ application, and also implements the Lexical, Syntax, Semantic Compiler, and the Bytecode Virtual Machine.
 
