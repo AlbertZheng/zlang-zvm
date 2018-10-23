@@ -1,6 +1,6 @@
 # What is the project?
 
-**If you know Chinese, I suggest you to read the [Chinese README.md](/README-zh_CN.md).**
+**If you know Chinese, please read the [Chinese README.md](/README-zh_CN.md).**
 
 This project is one of my private work started in 2001: A robust, flexible, high-speed strongly-typed embedded language for C++ application, and also implements the Lexical, Syntax, Semantic Compiler, and the Bytecode Virtual Machine.
 
@@ -38,7 +38,7 @@ Please refer to [the technical white paper of Z-Language syntax specification](/
 
 ## Design of Bytecode Virtual Machine of Z-Language
 
-As you know, the source codes are the best document to deeply understand a product, please directly read the source codes for knowing the design of Bytecode Virtual Machine of Z-Language.
+Please directly read the source codes for knowing the design of Bytecode Virtual Machine of Z-Language.
 
 1. The source codes and comments in [InstructionCode.hpp](https://github.com/AlbertZheng/zlang-zvm/blob/master/zdk/zls/zvm/InstructionCode.hpp);
 2. The source codes in the directory [```~/zlang-zvm/zdk/zls/zvm/```](https://github.com/AlbertZheng/zlang-zvm/tree/master/zdk/zls/zvm).
