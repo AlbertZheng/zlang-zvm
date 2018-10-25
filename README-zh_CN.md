@@ -36,7 +36,7 @@ Z-Language语言的语法规范，请参见[Z-Language语言语法规范白皮�
 
 ## Z-Language`字节码虚拟机`设计
 
-直接阅读源代码[InstructionCode.hpp里的注释](https://github.com/AlbertZheng/zlang-zvm/blob/master/zdk/zls/zvm/InstructionCode.hpp)，以及[`~/zlang-zvm/zdk/zls/zvm/`](https://github.com/AlbertZheng/zlang-zvm/tree/master/zdk/zls/zvm)下的源代码。
+请直接阅读源代码[InstructionCode.hpp里的注释](https://github.com/AlbertZheng/zlang-zvm/blob/master/zdk/zls/zvm/InstructionCode.hpp)，以及[`~/zlang-zvm/zdk/zls/zvm/`](https://github.com/AlbertZheng/zlang-zvm/tree/master/zdk/zls/zvm)下的源代码。
 
 <br>
 
@@ -169,6 +169,6 @@ Usage: zlangc [OPTIONS]... [FILES]...
 
 ## License
 
-Copyright (C) 2001-2018 Albert Zheng, 郑立松
+Copyright (C) 2001-2018 Lisong Zheng, 郑立松
 
 The binaries and source code of this Project can be used according to the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
